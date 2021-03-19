@@ -23,21 +23,20 @@ DataTable-Editable accept following options.
 
 | Option | Type of accepted value | default | Description |
 | --- | --- | --- | --- |
-| [`add`](#add) | *boolean* | `true` | Enable to add new line to table |
-| [`delete`](#delete) | *boolean* | `true` | Enable to delete line from table |
-| [`columns`](#columns) | *null / array[int, int, ...] / false* | `null` | Set column index to be editable. All columns are editable on default. |
-| [`rows`](#rows) | *null / array[int, int, ...] / false* | `null` | Set row index to be editable. All rows are editable on default. |
-| [`cells`](#cells) | *null / array[int, int, ...]* | `null` | Set perticular cells to be editable. |
-| [`inputType`](#inputType) | *string* | `text` | Set HTML input type for all editable cell. Following will be accepted `text` `number` `date` `select` `textarea` |
-| [`saveType`](#saveType) | *string* | `auto` | Set when to run saving mthod. `auto` Save data on every cell edit done.`manual` Save data when the "save" button is pushed |
-| [`ajax`](#ajax) | *object* | | Set ajax properties. |
+| [`add`](#add) | boolean | `true` | Enable to add new line to table |
+| [`delete`](#delete) | boolean | `true` | Enable to delete line from table |
+| [`columns`](#columns) | boolean / array | `true` | Set column index to be editable. All columns are editable on default. |
+| [`rows`](#rows) | boolean / array  | `true` | Set row index to be editable. All rows are editable on default. |
+| [`cells`](#cells) | null / array | `null` | Set perticular cells to be editable. |
+| [`inputType`](#inputType) | string | `text` | Set HTML input type for all editable cell. Following will be accepted `text` `number` `date` `select` `textarea` |
+| [`saveType`](#saveType) | string | `auto` | Set when to run saving mthod. `auto` Save data on every cell edit done.`manual` Save data when the "save" button is pushed |
+| [`ajax`](#ajax) | object | | Set ajax properties. |
 | [`keyData`](#keyData) | | false | |
 | [`validateDraw`](#validateDraw) | | false | |
-| [`columnDefs`](#columnDefs) | *array[{...}, {...} ,...]* | [] | Set HTML input type and formulas for pericular column.|
+| [`columnDefs`](#columnDefs) | array[{...}, {...} ,...] | [] | Set HTML input type and formulas for pericular column.|
 
 #### add
 #### delete
-
 
 #### columns
 #### rows
