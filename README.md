@@ -1,16 +1,16 @@
 # DataTable-Editable
-# USAGE
+## USAGE
 
-# OPTIONS
-enabled
-add
-delete
-columns
-rows
-cell
-inputType
-saveType
-ajax
-keyData
-validateDraw
-columnDefs
+## OPTIONS
+###enabled
+###add
+###delete
+###columns
+###rows
+###cell
+###inputType
+###saveType
+###ajax
+###keyData
+###validateDraw
+###columnDefs
