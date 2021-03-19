@@ -14,9 +14,9 @@ Follwing libraries may helpful(Recommended);
 
 Define a DataTable as usual.
 
-Pass to the DataTable constructor at least: `editable:true`
+Pass to the DataTable constructor at least `editable:true`.
 
-If you use buttons plug-in, you need to pass `dom`, `buttons` too.
+If you use buttons plug-in, you also need to pass `dom` and  `buttons` .
 
 ## OPTIONS
 DataTable-Editable accept following options.
@@ -25,9 +25,9 @@ DataTable-Editable accept following options.
 | --- | --- | --- | --- |
 | [`add`](#add) | *boolean* | `true` | Enable to add new line to table |
 | [`delete`](#delete) | *boolean* | `true` | Enable to delete line from table |
-| [`columns`](#columns) | *array[int, int, ...]* | `null` | Set column index which is editable. All columns are editable on default. |
-| [`rows`](#rows) | *array[int, int, ...]* | `null` | Set row index which is editable. All rows are editable on default. |
-| [`cells`](#cells) | *array[{rpw:int, col:int},{}, ...]* | `null` | Set perticular cell which is editable. All cells are editable on default. |
+| [`columns`](#columns) | *null / array[int, int, ...] / false* | `null` | Set column index to be editable. All columns are editable on default. |
+| [`rows`](#rows) | *null / array[int, int, ...] / false* | `null` | Set row index to be editable. All rows are editable on default. |
+| [`cells`](#cells) | *null / array[int, int, ...]* | `null` | Set perticular cells to be editable. |
 | [`inputType`](#inputType) | *string* | `text` | Set HTML input type for all editable cell. Following will be accepted `text` `number` `date` `select` `textarea` |
 | [`saveType`](#saveType) | *string* | `auto` | Set when to run saving mthod. `auto` Save data on every cell edit done.`manual` Save data when the "save" button is pushed |
 | [`ajax`](#ajax) | *object* | | Set ajax properties. |
@@ -37,7 +37,7 @@ DataTable-Editable accept following options.
 
 #### add
 #### delete
-`*boolean true/false default true*`
+
 
 #### columns
 #### rows
