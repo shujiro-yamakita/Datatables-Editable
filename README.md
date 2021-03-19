@@ -6,8 +6,8 @@ This pckage support add, delete and inline editing and send form to server via A
 ## USAGE
 Include following libraries in the project(Necessary)
 
-1.jQuery
-2.jquery.dataTables
+1. jQuery
+2. jquery.dataTables
 
 Follwing libraries may helpful(Recommended);
 1.dataTables.buttons;
