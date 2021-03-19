@@ -24,10 +24,10 @@ DataTable-Editable accept following options.
 | Option | Accepted values | default | Description |
 | --- | --- | --- | --- |
 | `add` | *boolean* | `true` | Enable to add new line to table |
-| delete | | | |
-| columns | | | |
-| rows | | | |
-| cell | | | |
+| delete | *boolean* | `true` | ENable to delete line from table |
+| columns | *array[int, int, ...]* | `null` | Set column index which is editable. All columns are editable on default. |
+| rows | *array[int, int, ...]* | `null` | Set row index which is editable. All rows are editable on default. |
+| cell | *array[{rpw:int, col:int},{}, ...]* | `null` | Set perticular cell which is editable. All cells are editable on default. |
 | inputType | | | |
 | saveType | | | |
 | ajax | | | |
