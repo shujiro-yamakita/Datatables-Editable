@@ -23,20 +23,22 @@ DataTable-Editable accept following options.
 
 | Option | Type of accepted value | default | Description |
 | --- | --- | --- | --- |
-| [`add`](https://github.com/shujiro-yamakita/datatables-editable/blob/main/README.md#add) | *boolean* | `true` | Enable to add new line to table |
-| [`delete`](https://github.com/shujiro-yamakita/datatables-editable/blob/main/README.md#delete) | *boolean* | `true` | Enable to delete line from table |
-| [`columns`](https://github.com/shujiro-yamakita/datatables-editable/blob/main/README.md#columns) | *array[int, int, ...]* | `null` | Set column index which is editable. All columns are editable on default. |
-| [`rows`](https://github.com/shujiro-yamakita/datatables-editable/blob/main/README.md#rows) | *array[int, int, ...]* | `null` | Set row index which is editable. All rows are editable on default. |
-| [`cells`](https://github.com/shujiro-yamakita/datatables-editable/blob/main/README.md#cells) | *array[{rpw:int, col:int},{}, ...]* | `null` | Set perticular cell which is editable. All cells are editable on default. |
+| [`add`](#add) | *boolean* | `true` | Enable to add new line to table |
+| [`delete`](#delete) | *boolean* | `true` | Enable to delete line from table |
+| [`columns`](#columns) | *array[int, int, ...]* | `null` | Set column index which is editable. All columns are editable on default. |
+| [`rows`](#rows) | *array[int, int, ...]* | `null` | Set row index which is editable. All rows are editable on default. |
+| [`cells`](#cells) | *array[{rpw:int, col:int},{}, ...]* | `null` | Set perticular cell which is editable. All cells are editable on default. |
 | [`inputType`](#inputType) | *string* | `text` | Set HTML input type for all editable cell. Following will be accepted `text` `number` `date` `select` `textarea` |
-| saveType | *string* | `auto` | Set when to run saving mthod. `auto` Save data on every cell edit done.`manual` Save data when the "save" button is pushed |
-| ajax | *object* | | Set ajax properties. |
-| keyData | | false | |
-| validateDraw | | false | |
-| columnDefs | *array[{...}, {...} ,...]* | [] | Set HTML input type and formulas for pericular column.|
+| [`saveType`](#saveType) | *string* | `auto` | Set when to run saving mthod. `auto` Save data on every cell edit done.`manual` Save data when the "save" button is pushed |
+| [`ajax`](#ajax) | *object* | | Set ajax properties. |
+| [`keyData`](#keyData) | | false | |
+| [`validateDraw`](#validateDraw) | | false | |
+| [`columnDefs`](#columnDefs) | *array[{...}, {...} ,...]* | [] | Set HTML input type and formulas for pericular column.|
 
 #### add
 #### delete
+`*boolean true/false default true*`
+
 #### columns
 #### rows
 #### cells
