@@ -20,7 +20,9 @@ If you use buttons plug-in, you need to pass `dom`, `buttons` too.
 
 ## OPTIONS
 DataTable-Editable accept following options.
+
 | **Option** | **Accepted values** | **default** | **Description** |
+| --- | --- | --- | --- | --- |
 | add | | | |
 | delete | | | |
 | columns | | | |
