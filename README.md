@@ -23,8 +23,8 @@ DataTable-Editable accept following options.
 
 | Option | Type of accepted value | default | Description |
 | --- | --- | --- | --- |
-| `add` | *boolean* | `true` | Enable to add new line to table |
-| `delete` | *boolean* | `true` | Enable to delete line from table |
+| [`add`](https://github.com/shujiro-yamakita/datatables-editable/blob/main/README.md#add) | *boolean* | `true` | Enable to add new line to table |
+| [`delete`](https://github.com/shujiro-yamakita/datatables-editable/blob/main/README.md#delete) | *boolean* | `true` | Enable to delete line from table |
 | `columns` | *array[int, int, ...]* | `null` | Set column index which is editable. All columns are editable on default. |
 | `rows` | *array[int, int, ...]* | `null` | Set row index which is editable. All rows are editable on default. |
 | `cells` | *array[{rpw:int, col:int},{}, ...]* | `null` | Set perticular cell which is editable. All cells are editable on default. |
