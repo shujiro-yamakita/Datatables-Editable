@@ -29,7 +29,9 @@ DataTable-Editable accept following options.
 | `rows` | *array[int, int, ...]* | `null` | Set row index which is editable. All rows are editable on default. |
 | `cell` | *array[{rpw:int, col:int},{}, ...]* | `null` | Set perticular cell which is editable. All cells are editable on default. |
 | `inputType` | *string* | `text` | Set HTML input type for all editable cell. Following will be accepted `text` `number` `date` `select` `textarea` |
-| saveType | *string* | `auto` | Set when to run saving mthod. -`auto` Save data on every cell edit done |
+| saveType | *string* | `auto` | Set when to run saving mthod. 
+-`auto` Save data on every cell edit done.
+-`manual` Save data when the "save" button is pushed |
 | ajax | | | |
 | keyData | | | |
 | validateDraw | | | |
