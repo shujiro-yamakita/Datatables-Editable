@@ -23,7 +23,7 @@ DataTable-Editable accept following options.
 
 | Option | Accepted values | default | Description |
 | --- | --- | --- | --- |
-| add | a | a | a |
+| `add` | *boolean* | `true` | Enable to add new line to table |
 | delete | | | |
 | columns | | | |
 | rows | | | |
