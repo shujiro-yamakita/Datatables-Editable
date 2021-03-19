@@ -19,15 +19,16 @@ Pass to the DataTable constructor at least: `editable:true`
 If you use buttons plug-in, you need to pass `dom`, `buttons` too.
 
 ## OPTIONS
-### enabled
-### add
-### delete
-### columns
-### rows
-### cell
-### inputType
-### saveType
-### ajax
-### keyData
-### validateDraw
-### columnDefs
+DataTable-Editable accept following options.
+| **Option** | **Accepted values** | **default** | **Description** |
+| add | | | |
+| delete | | | |
+| columns | | | |
+| rows | | | |
+| cell | | | |
+| inputType | | | |
+| saveType | | | |
+| ajax | | | |
+| keyData | | | |
+| validateDraw | | | |
+| columnDefs | | | |
