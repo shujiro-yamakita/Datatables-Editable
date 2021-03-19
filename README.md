@@ -24,13 +24,25 @@ DataTable-Editable accept following options.
 | Option | Type of accepted value | default | Description |
 | --- | --- | --- | --- |
 | `add` | *boolean* | `true` | Enable to add new line to table |
-| `delete` | *boolean* | `true` | ENable to delete line from table |
+| `delete` | *boolean* | `true` | Enable to delete line from table |
 | `columns` | *array[int, int, ...]* | `null` | Set column index which is editable. All columns are editable on default. |
 | `rows` | *array[int, int, ...]* | `null` | Set row index which is editable. All rows are editable on default. |
-| `cell` | *array[{rpw:int, col:int},{}, ...]* | `null` | Set perticular cell which is editable. All cells are editable on default. |
+| `cells` | *array[{rpw:int, col:int},{}, ...]* | `null` | Set perticular cell which is editable. All cells are editable on default. |
 | `inputType` | *string* | `text` | Set HTML input type for all editable cell. Following will be accepted `text` `number` `date` `select` `textarea` |
 | saveType | *string* | `auto` | Set when to run saving mthod. `auto` Save data on every cell edit done.`manual` Save data when the "save" button is pushed |
 | ajax | *object* | | Set ajax properties. |
-| keyData | | | |
-| validateDraw | | | |
-| columnDefs | *array[{...}, {...} ,...]* | | Set HTML input type and formulas for pericular column. See the following *columnDefs*|
+| keyData | | false | |
+| validateDraw | | false | |
+| columnDefs | *array[{...}, {...} ,...]* | [] | Set HTML input type and formulas for pericular column.|
+
+#### add
+#### delete
+#### columns
+#### rows
+#### cells
+#### inputType
+#### saveType
+#### ajax
+#### keyData
+#### validateDraw
+#### columnDefs
