@@ -31,7 +31,7 @@ DataTables-Editable accept following options.
 | [`inputType`](#inputType) | string | `text` | Set HTML input type for all editable cell. Following will be accepted `text` `number` `date` `select` `textarea` |
 | [`saveType`](#saveType) | string | `auto` | Set when to run saving method. `auto` Save data on every cell edit done.`manual` Save data when the "save" button is pushed |
 | [`ajax`](#ajax) | object | | Set ajax properties. |
-| [`keyData`](#keyData) | | `false` | |
+| [`keyData`](#keyData) | string | `false` | |
 | [`validateDraw`](#validateDraw) | | `false` | |
 | [`columnDefs`](#columnDefs) | array | `[]` | Set HTML input type and formulas for pericular column.|
 
