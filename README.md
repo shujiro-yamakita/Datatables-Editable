@@ -19,7 +19,7 @@ Pass to the DataTable constructor at least `editable:true`.
 If you use buttons plug-in, you also need to pass `dom` and  `buttons` .
 
 ## OPTIONS
-DataTable-Editable accept following options.
+DataTables-Editable accept following options.
 
 | Option | Type of accepted value | default | Description |
 | --- | --- | --- | --- |
@@ -47,3 +47,7 @@ DataTable-Editable accept following options.
 #### keyData
 #### validateDraw
 #### columnDefs
+
+## METHODS
+
+
