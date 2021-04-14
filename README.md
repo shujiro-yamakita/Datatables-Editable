@@ -64,17 +64,17 @@ name:property name
 
 data:data
 
-#### editable().reConstructFormData(name, data)
+### editable().reConstructFormData(name, data)
 
-#### editable().setEditableColumns(array)
-#### editable().setEditableRows(array)
-#### editable().setEditableCells(array)
-#### editable().getEditableMap()
+### editable().setEditableColumns(array)
+### editable().setEditableRows(array)
+### editable().setEditableCells(array)
+### editable().getEditableMap()
 
-#### editable().toggleValidateDraw()
-#### editable().save()
+### editable().toggleValidateDraw()
+### editable().save()
 
-#### editable().disable()
+### editable().disable()
 
 
 
