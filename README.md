@@ -49,5 +49,32 @@ DataTables-Editable accept following options.
 #### columnDefs
 
 ## METHODS
+DataTables-Editable has following methods.
+
+#### editable().enabled()
+Check dataTables-Editable has been activated or not.
+
+return true/false
+
+#### editable().addToFormData(name, data)
+Add To FormData object used in DataTalbes-Editable.
+
+args
+name:property name
+
+data:data
+
+#### editable().reConstructFormData(name, data)
+
+#### editable().setEditableColumns(array)
+#### editable().setEditableRows(array)
+#### editable().setEditableCells(array)
+#### editable().getEditableMap()
+
+#### editable().toggleValidateDraw()
+#### editable().save()
+
+#### editable().disable()
+
 
 
