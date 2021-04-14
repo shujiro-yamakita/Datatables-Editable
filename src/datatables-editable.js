@@ -27,13 +27,12 @@
     'use strict';
     var DataTable = $.fn.dataTable;
 
-
     var _instance = 0;
 
     var Editable = function( dt, opts )
     {
         if ( ! DataTable.versionCheck || ! DataTable.versionCheck( '1.10.8' ) ) {
-            throw( "Warning: TableForm requires DataTables 1.10.8 or greater");
+            throw( "Warning: Editable requires DataTables 1.10.8 or greater");
         }
 
         // User and defaults configuration object
@@ -44,7 +43,7 @@
         );
 
         /**
-        * @namespace Settings object which contains customisable information for TableForm instance
+        * @namespace Settings object which contains customisable information for Editable instance
         */
         this.s = {
             /** @type {DataTable.Api} DataTables' API instance */
@@ -67,11 +66,13 @@
         this.className = {
             'WRAPPER' : 'editable-wrapper',
             'FOCUS' : 'editable-focus',
+            'INSERT_BOX' : 'editable-insert-wrapper',
         }
 
         this.queryName = {
             'WRAPPER' : `.${this.className.WRAPPER}`,
             'FOCUS' : `.${this.className.FOCUS}`,
+            'INSERT_BOX' : `.${this.className.INSERT_BOX}`,
         }
 
         //キーステータスの登録
@@ -323,6 +324,11 @@
             }
         },
 
+        getEditableMap: function()
+        {
+            return this.c.map;
+        },
+
         /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
         * Constructor
         */
@@ -331,20 +337,31 @@
             const _this = this;
             var dt = this.s.dt;
 
+
             // Make the instance accessible to the API
             dt.settings()[0]._oEditable = this;
 
             // オプションの設定の確認
 
+            //言語設定
+            this.lang = $.extend(true, {} ,
+                this.c.language,
+                dt.settings()[0].oLanguage.editable,
+            );
+
             // 編集可能カラムの設定
-            this._constructMap();
+            if(!this._constructMap()){
+                return;
+            };
+
+            this._constructColumnDefs();
 
             // ajax設定の確認
             if( this.c.ajax === undefined ){
-                console.warn("Warning! Anything you edit on the table not to be saved anywhere becouse the 'ajax' options are not set." )
+                console.warn(this.lang.console.ajax.no_ajax)
             } else {
                 if (this.c.ajax.url === undefined){
-                    console.warn("Warning! Please set url for saving methods otherwise nothing will be saved")
+                    console.warn(this.lang.console.ajax.no_url)
                 } else if (this.c.ajax.type === "undefined") {
                     this.c.ajax.type === "post"
                 }
@@ -356,6 +373,15 @@
             // セーブタイプの確認 マニュアル時には確定ボタンを追加
             if(this.c.saveType === "manual"){
                 this._constructSaveButtonArea()
+            }
+
+            if(this.c.delete === true){
+                this._makeDeleteButton()
+            }
+
+            if(this.c.add === true){
+                this._makeAddButton()
+                this._constructInsertWindow()
             }
 
             // _focusListenerの起動
@@ -379,6 +405,7 @@
                 _this._focusListenerRemove();
                 _this._removeClasses();
             })
+        // })
         },
 
         _constructMap: function(){
@@ -387,8 +414,10 @@
                 this._constructTargetCheckRows()?
                 this._constructTargetMaps() : false : false :false
             )){
-                console.error('DataTables-Editable is not actevated')
+                console.error(this.lang.console.system.not_activated)
                 return false;
+            } else {
+                return true;
             }
         },
 
@@ -407,13 +436,13 @@
             }
 
             if(!Array.isArray(cl)){
-                console.error("Error! 'cells' option must be set in array of objects which contains 'row' and 'col'");
+                console.error(this.lang.console.cells.not_array);
                 return false;
             }
 
             for(let i = cl.length - 1; i >= 0; i--){
                 if(!"row" in cl[i] || !"col" in cl[i]){
-                    console.error("Error! elements of cell option does not includes 'row' or 'col' ");
+                    console.error(this.lang.console.cell.wrong_elements);
                     return false;
                 }
             }
@@ -448,7 +477,7 @@
             const dt = this.s.dt;
             this.c._oColumns = [];
 
-            if( this.c.columns === "all"){
+            if( this.c.columns === true){
                 for(let i = 0; i < dt.columns()[0].length; i++){
                     if(dt.columns(i).visible()[0] === true){
                         this.c._oColumns.push(i);
@@ -456,16 +485,16 @@
                 }
             } else if (Array.isArray(this.c.columns)) {
                 if(this.c.columns.length > dt.columns()[0].length){
-                    console.error("Error! Too many elements are set on 'columns' option. If you want to set all columns editable, do not set 'columns' option.")
+                    console.error(this.lang.console.columns.too_many_elements)
                     return false;
                 }
                 for(let i = 0; i < this.c.columns.length; i++){
                     if(isNaN(this.c.columns[i])){
-                        console.error("Error! The 'columns' option you set includes elements which is not a Number.")
+                        console.error(this.lang.console.columns.not_number)
                         return false;
                     }
                     if(this.c.columns[i] >= dt.columns()[0].length){
-                        console.error("Error! The 'columns' option includes index which does not exists on table.");
+                        console.error(this.lang.console.columns.wrong_index);
                         return false;
                     }
                     if(dt.columns(this.c.columns[i]).visible()[0] === false){
@@ -474,8 +503,10 @@
                     this.c._oColumns.push(this.c.columns[i])
                 }
                 this.c._oColumns.sort((first, second) => first - second);
+            } else if(this.c.columns === false){
+                return true;
             } else {
-                console.error("Error! 'columns' option must be set by Array. If you want to set all columns editable, do not set 'columns' option.")
+                console.error(this.lang.console.columns.not_array)
                 return false;
             }
 
@@ -487,27 +518,28 @@
             const dt = this.s.dt;
             this.c._oRows = [];
 
-            if(this.c.rows !== false){
-                if(Array.isArray(this.c.rows)){
-                    for(let i = 0; i < this.c.rows.length; i++){
-                        if(isNaN(this.c.rows[i])){
-                            console.error("Error! The 'rows' option you set includes elements which is not a Number.")
-                            return false;
-                        }
-                        this.c._oRows.push(this.c.rows[i])
-                    }
-                    this.c._oRows.sort((first, second) => first - second);
-                } else {
-                    console.error("Error! 'rows' option must be set by Array. If you want to set all rows editable, do not set 'rows' option.")
-                    return false;
-                }
-            } else {
+            if(this.c.rows === true) {
                 for(let i = 0; i < dt.rows()[0].length; i++){
                     if(dt.rows()[0].includes(i) === true){
                         this.c._oRows.push(i);
                     }
                 }
+            } else if(Array.isArray(this.c.rows)){
+                    for(let i = 0; i < this.c.rows.length; i++){
+                        if(isNaN(this.c.rows[i])){
+                            console.error(this.lang.console.rows.not_number)
+                            return false;
+                        }
+                        this.c._oRows.push(this.c.rows[i])
+                    }
+                    this.c._oRows.sort((first, second) => first - second);
+            } else if(this.c.rows === false){
+
+            } else {
+                console.error(this.lang.console.rows.not_array)
+                return false;
             }
+
             return true;
         },
 
@@ -517,37 +549,60 @@
          */
         _constructTargetMaps : function()
         {
+            const dt = this.s.dt;
             const columns = this.c._oColumns;
             const rows = this.c._oRows;
             const cells = this.c._oCells;
+            const oRow = row => dt.rows({order:'applied'})[0].indexOf(row)
             this.c.map = {};
 
             for(let i = 0; i < rows.length; i++){
-                this.c.map[rows[i]] = columns.slice();
+                // this.c.map[rows[i]] = columns.slice();
+                this.c.map[oRow(rows[i])] = columns.slice();
             }
             for(let i = 0; i < cells.length; i++){
-                if(cells[i].row in this.c.map){
-                    this.c.map[cells[i].row].push(cells[i].col)
+                if(oRow(cells[i].row) in this.c.map){
+                    this.c.map[oRow(cells[i].row)].push(cells[i].col)
                 } else {
-                    this.c.map[cells[i].row] = [cells[i].col];
+                    this.c.map[oRow(cells[i].row)] = [cells[i].col];
                 }
             }
             for(let i = 0; i < rows.length; i++){
-                this.c.map[rows[i]].sort((a, b) => a - b);
+                this.c.map[oRow(rows[i])].sort((a, b) => a - b);
             }
 
             return true;
         },
 
+        _constructColumnDefs : function()
+        {
+            const dt = this.s.dt;
+            this.c._oColumnDefs = [];
+            for(let i = 0; i < dt.columns()[0].length; i++){
+                this.c._oColumnDefs[i] = {
+                    inputType:this.c.inputType,
+                    formula:this.c.formula,
+                    format:this.c.format,
+                }
+                for(let d of this.c.columnDefs){
+                    if(d.target.includes(i)){
+                        $.extend(this.c._oColumnDefs[i], d)
+                        delete this.c._oColumnDefs[i].target
+                    }
+                }
+            }
+        },
+
         _constructFormData:function()
         {
             this.s.fd = new FormData()
+            if( this.c.ajax !== undefined){
             if( this.c.ajax.data ){
                 const d = this.c.ajax.data;
                 for( let key in d){
                     this.s.fd.append(key, d[key])
                 }
-            }
+            }}
         },
 
         _constructSaveButtonArea:function()
@@ -557,50 +612,54 @@
 
             const VDMSG = {
                 0:{
-                    message: type => 'Stopped redrawing',
-                    current:'OFF',
-                    oposit:'ON'
+                    message: type => this.lang.message.stopRedraw,
+                    current:'buttonOn',
+                    oposit:'org'
                 },
                 1:{
-                    message: type => `${type} will be redrawn on every cell edit`,
-                    current:'ON',
-                    oposit:'OFF'
+                    message: type => this.lang.message.startRedraw(type),
+                    current:'org',
+                    oposit:'buttonOn'
                 }
             }
 
             if('_buttons' in dt.context[0]){
                 dt.button().add(0, {
                     action : function (e, dt, button , config) {
-                        if(confirm('Saving all changes')){
+                        if(confirm(_this.lang.message.submit)){
                             _this._save().then(()=>{
                                 dt.ajax.reload(()=>{
-                                    console.log('redrawn');
                                     _this._screenLock('stop');
                                 }, false);
                             })
                         }
                     },
-                    text:"変更を確定する",
+                    className:"org",
+                    text:this.lang.button.submit,
                 })
                 dt.button().add(1, {
                     action : function (e, dt, button, config) {
-                        if(confirm('Clear all changes not saved?')){
+                        if(confirm(_this.lang.message.cancel)){
                             dt.ajax.reload();
                         }
                     },
-                    text:"変更をキャンセルする",
+                    className:"org",
+                    text:this.lang.button.cancel,
                 })
                 if(this.c.validateDraw){
                     dt.button().add(2, {
                         action : function(e, dt, button, config) {
                             _this.toggleValidateDraw();
                             alert(VDMSG[_this.s.VDSwitch].message(_this.c.validateDraw));
-                            button.text(`自動再計算${VDMSG[_this.s.VDSwitch].oposit}`)
+                            // button.text(`自動再計算${VDMSG[_this.s.VDSwitch].oposit}`)
+                            button.text(_this.lang.button.validate)
+                             .toggleClass('buttonOn')
                             if(_this.s.VDSwitch){
                                 dt.rows().invalidate().draw();
                             }
                         },
-                        text:"自動再計算OFF",
+                        className:"org buttonOn",
+                        text:_this.lang.button.validate,
                     })
                 }
             } else {
@@ -612,21 +671,164 @@
                 const saveButton = $('<button></button>')
                         .addClass('editable_button')
                         .attr('id',`${dtId}_editable_submit`)
-                        .text('変更を確定する');
+                        .text(this.lang.button.submit);
                 const cancelButton = $('<button></button>')
                         .addClass('editable_button')
                         .attr('id',`${dtId}_editable_cancel`)
-                        .text('変更をキャンセルする');
+                        .text(this.lang.button.cancel);
 
                 $(saveButtonArea).append(saveButton,cancelButton);
                 $(dtWrapper).append(saveButtonArea);
             }
         },
 
+        _makeAddButton:function()
+        {
+            const dt = this.s.dt;
+            const _this = this;
+
+            dt.button().add(0, {
+                action : function(e, dt, button, config) {
+                    _this._showInsertWindow();
+                },
+                text:this.lang.button.add
+            })
+        },
+
+        _makeDeleteButton:function()
+        {
+            const dt = this.s.dt;
+            const _this = this;
+
+            dt.button().add(0, {
+                action : function(e, dt, button, config) {
+                    if(confirm(_this.lang.message.confirmDelete)){
+                        _this._deleteLine().then(()=>{
+                            dt.ajax.reload(()=>{
+                                _this._screenLock('stop');
+                            }, false);
+                        })
+                    }
+                },
+                text:this.lang.button.delete
+            })
+        },
+
+        _constructInsertWindow:function()
+        {
+            const dt = this.s.dt;
+            const oDefs = this.c._oColumnDefs;
+            const dtId = dt.settings()[0].sTableId
+            const toUp = str => str.charAt(0).toUpperCase() + str.slice(1);
+
+            const box = $('<div></div>')
+                .addClass(this.className.INSERT_BOX)
+                .attr('id', `${dtId}-editable-insert-wrapper`);
+
+            const title = $('<p></p>')
+                .addClass('title')
+                .text(this.lang.message.insertTitle)
+
+            $(box).append(title);
+
+
+            for(let i = 0; i < dt.columns()[0].length; i++){
+                if(this.c._oColumns.includes(i)) {
+                    const line = $('<p></p>').addClass('insertline');
+                    const title = $('<span></span>').addClass('inserttitle')
+                    .text($(dt.column(i).header()).text() + ":");
+                    const name = dt.context[0].aoColumns[i].name
+                    || $(dt.column(i).header()).data('name');
+
+                    const input = this["_input" + toUp(oDefs[i].inputType)]("dum", oDefs[i])
+
+                    input.attr('name', name);
+
+                    $(line).append(title);
+                    $(line).append(input);
+                    $(box).append(line);
+                }
+            }
+
+            const submit = $('<button></button>')
+                .addClass('insert-submit')
+                .text(this.lang.button.submit);
+            const cancel = $('<button></button>')
+                .addClass('insert-cancel')
+                .text(this.lang.button.cancel);
+
+            $(box).append(submit);
+            $(box).append(cancel);
+
+            $('body').append(box);
+
+        },
+
 
         /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
         * Private methods
         */
+
+       _deleteLine:function(){
+           const dt = this.s.dt;
+           const c = this.c;
+           const _this = this;
+
+           const target = $(`.${this.s.namespace} ${this.queryName.FOCUS}`);
+
+           this._addDeleteToFormData(target);
+
+           return $.ajax({
+               url:c.ajax.url,
+               type:c.ajax.type,
+               data:this.s.fd,
+               processData:false,
+               contentType:false,
+           })
+           .done((ret) => {
+
+           }).fail((ret)=>{
+               alert('deleting line failed');
+               // console.log(ret);
+           }).always((ret) => {
+               console.log(ret);
+               _this._constructFormData();
+               // _this._screenLock('stop');
+           })
+
+       },
+
+       _addDeleteToFormData:function(target, val){
+           const dt = this.s.dt;
+
+           const key = this.c.keyData ? dt.row(target).data()[this.c.keyData] : dt.row(target).index();
+
+           this.s.fd.append(`deletes[]`, key);
+       },
+
+       _showInsertWindow:function(){
+           const dt = this.s.dt;
+           const dtId = dt.settings()[0].sTableId
+
+           $(`#${dtId}-editable-insert-wrapper`)
+            .css('display','block')
+       },
+
+       _addInsertToFormData:function(){
+           const dt = this.s.dt;
+           const dtId = dt.settings()[0].sTableId
+           const unique = Date.now();
+
+           // const inserts = $(`#${dtId}-editable-insert-wrapper`);
+           const set = {};
+           for(let i = 0; i < dt.columns()[0].length; i++){
+               const name = dt.context[0].aoColumns[i].name
+                            || $(dt.column(i).header()).data('name');
+               const val = $(`#${dtId}-editable-insert-wrapper :input[name=${name}]`).val();
+
+               this.s.fd.append(`inserts[${unique}][${name}]`,val);
+           }
+       },
 
        _activateCell:function(target)
        {
@@ -636,6 +838,7 @@
            const row = dt.rows({order:'applied'})[0].indexOf(dt.row(target).index());
 
            const defs = this.c.columnDefs || [];
+           const oDefs = this.c._oColumnDefs;
 
            if(!row in this.c.map){
                return false;
@@ -643,20 +846,9 @@
                return false;
            }
 
-           let box;
            const toUp = str => str.charAt(0).toUpperCase() + str.slice(1);
-           for(let def of defs){
-               if(def.target.includes(col)){
-                   box = this[
-                       "_input" + toUp(def.inputType)
-                   ](target, def)
-               }
-           }
-           if(!box){
-               box = this.c.inputType ?
-                     this['_input' + toUp(this.c.inputType)](target, this.c) :
-                     this._inputText(target, [])
-           }
+
+           const box = this["_input" + toUp(oDefs[col].inputType)](target, oDefs[col])
 
            $(box).outerWidth( $(target).outerWidth() );
            $(box).outerHeight( $(target).outerHeight() );
@@ -705,10 +897,24 @@
 
        _inputDate: function(target, def){
            const date = new Date(this.s.dt.cell(target).data());
-           const format = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+           const value = this._formatDate(date, 'Y-m-d');
            return $('<input></input>')
                 .attr('type', 'date')
-                .val(format)
+                .val(value)
+       },
+
+       _formatDate:function(date, format){
+           const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+           let ret = format.replace('Y', date.getFullYear());
+           ret = ret.replace('y', ("" + date.getFullYear()).slice(-2));
+           ret = ret.replace('n', (date.getMonth() + 1));
+           ret = ret.replace('M', MONTHS[date.getMonth()]);
+           ret = ret.replace('m', ("00" + (date.getMonth() + 1)).slice(-2));
+           ret = ret.replace('d', ("00" + (date.getDate())).slice(-2));
+           ret = ret.replace('j', date.getDate());
+
+           return ret;
+
        },
 
        _inputSelect:function(target, def){
@@ -738,15 +944,33 @@
            return ret
        },
 
+
+       /***** セレクター操作関連 ***************/
+       /**
+        * 押しっぱなしのキー判別
+        * @param  {[type]} keyCode [description]
+        * @return {[type]}         [description]
+        */
        _statePress:function(keyCode){
            this.keyOnPress = keyCode;
        },
 
+       /**
+        * 選択中のセルを入力可能状態にする
+        * @return {[type]} [description]
+        */
        _focusOn:function(){
            const target = $(this.queryName.FOCUS)[0];
            this._activateCell(target);
        },
 
+       /**
+        * [description]
+        * @param  {[type]} current [description]
+        * @param  {[type]} way     [description]
+        * @param  {[type]} status  [description]
+        * @return {[type]}         [description]
+        */
        _getRow:function(current, way, status){
            const w = way;
            if(way === 0){
@@ -935,6 +1159,9 @@
            }
 
            $(dt.table().container()).find(qn.FOCUS).removeClass(cn.FOCUS);
+           dt.cells().nodes().each((i) => {
+               $(i).removeClass(cn.FOCUS);
+           })
            $(dt.cell(target.row, target.column).node()).addClass(cn.FOCUS)
            if(this._checkFixedColumns()){
                $(dt.cell(target.row ,target.column).fixedNode()).addClass(cn.FOCUS);
@@ -992,13 +1219,28 @@
        _checkInputData:function(){
 
            const dt = this.s.dt;
+           const c = this.c;
            const _this = this;
 
            const target = $(`.${this.s.namespace} ${this.queryName.FOCUS}`);
 
            const wrap = $(target).find(this.queryName.WRAPPER)
+           console.log(wrap);
            const org_val = dt.cell(target).data();
-           const formed_val = $(wrap).val();
+           let formed_val;
+           if($(wrap).attr('type') === "date"){
+               const col = dt.cell(target).index().column;
+               const date = new Date($(wrap).val());
+               for(let def of c.columnDefs){
+                   if(def.target.includes(col)){
+                       formed_val = _this._formatDate(date, def.format || "Y-m-d")
+                   }
+               }
+           }else if($(wrap).attr('type') === "number"){
+               formed_val = Number($(wrap).val())
+           } else {
+               formed_val = $(wrap).val();
+           }
 
            if(org_val == formed_val){
                const promise = new Promise((resolve, reject)=>{
@@ -1012,12 +1254,13 @@
 
                this._addToFormData(target, formed_val);
 
-               if(this.c.saveType === 'auto'){
+               if(this.c.saveType === 'auto' && this.c.ajax){
                    return _this._save().then(() => {
                        wrap.remove();
                    })
                    .fail((xhr, status, errorThrown) => {
                        const promise = new Promise((resolve, reject)=>{
+                           console.log(xhr, status, errorThrown);
                            wrap.remove();
                            dt.cell( target ).data(org_val);
                        });
@@ -1036,14 +1279,21 @@
            }
        },
 
+       /**
+        * 編集したデータをフォームに追加する
+        * @param  {[type]} target [description]
+        * @param  {[type]} val    [description]
+        * @return {[type]}        [description]
+        */
        _addToFormData:function(target, val){
            const dt = this.s.dt;
 
            const key = this.c.keyData ? dt.row(target).data()[this.c.keyData] : dt.row(target).index();
            const tcol = dt.columns()[0].indexOf(dt.column(target).index());
            const name = dt.context[0].aoColumns[tcol].name
-                        || $(dt.column(tcol).header()).data('name');
-           this.s.fd.append(`datas[${key}][${name}]`, val);
+                        || $(dt.column(tcol).header()).data('name')
+                        || $(dt.column(tcol).header()).text();
+           this.s.fd.append(`updates[${key}][${name}]`, val);
        },
 
        /**
@@ -1118,48 +1368,36 @@
        _save:function(){
            const c = this.c;
            const _this = this;
-           this._screenLock('start')
-           return $.ajax({
-               url:c.ajax.url,
-               type:c.ajax.type,
-               data:this.s.fd,
-               processData:false,
-               contentType:false,
-           })
-           .done((ret) => {
-
-           }).fail((ret)=>{
-               alert('saving data failed');
-               // console.log(ret);
-           }).always((ret) => {
-               console.log(ret);
-               _this._constructFormData();
-               // _this._screenLock('stop');
-           })
+           if(c.ajax !== undefined ){
+               this._screenLock('start')
+               return $.ajax({
+                   url:c.ajax.url,
+                   type:c.ajax.type,
+                   data:this.s.fd,
+                   processData:false,
+                   contentType:false,
+               })
+               .done((ret) => {
+                   console.log(ret);
+               }).fail((ret)=>{
+                   alert('saving data failed');
+               }).always((ret) => {
+                   _this._constructFormData();
+               })
+           }
        },
 
+       /**
+        * Controll Screen Lock
+        * @param  {string} state 'start' to lock screen or 'stop' to unlock screen
+        * @return {[type]}       [description]
+        */
        _screenLock:function(state){
            const overScreen = $('<div></div>')
             .attr('id','dataTable_editable_screenLock')
-            .css({
-                height:'100vh',
-                width:'100vw',
-                position:'fixed',
-                left:'0px',
-                top:'0px',
-                'z-index':9999,
-                'background-color':'rgba(128,128,128,0.4)',
-                'text-align':'center',
-            })
             .append($('<span></span>')
                 .attr('id','des_text')
                 .text('Saving')
-                .css({
-                    width:"100px",
-                    'line-height':'100vh',
-                    'font-size':'xxx-large',
-                    'color':'black'
-                })
             );
 
             const addPeriod = ()=> {
@@ -1184,7 +1422,7 @@
 
 
        /**
-        * Check if FixedColumns Expansion is applied to the table
+        * Check if Datatable-Editables Expansion is applied to the table
         * @return {boolean} [description]
         */
        _checkFixedColumns : function()
@@ -1215,6 +1453,8 @@
 
             const wrapper = () => {return $(q.WRAPPER).length > 0};
             const focus = () => {return $(q.FOCUS).length > 0};
+
+            this._focusListenerRemove();
 
             $(document)
             .on('keydown', namespace, function(e){
@@ -1261,6 +1501,9 @@
             .on('blur'+namespace, q.WRAPPER, function(){
                 __this._checkInputData()
             })
+            .on('order.dt', function(){
+                __this._constructMap();
+            })
 
             // ajax読み込み後に編集可能カラムを再設定する
             .on('xhr', function (e, settings, json, xhr) {
@@ -1288,6 +1531,40 @@
                 dt.ajax.reload();
             })
 
+            $(`#${dtId}-editable-insert-wrapper`)
+            .on('click', '.insert-submit', function(){
+                if((confirm('Add line data?'))){
+                    __this._addInsertToFormData();
+                    $(`#${dtId}-editable-insert-wrapper`)
+                        .css('display','none');
+                    $(`#${dtId}-editable-insert-wrapper :input`).each((i, e) =>{
+                        $(e).val("")
+                    })
+                    __this._save().then(()=>{
+                        dt.ajax.reload(()=>{
+                            __this._screenLock('stop');
+                        }, false);
+                    }).fail((xhr, status, errorThrown) => {
+                        const promise = new Promise((resolve, reject)=>{
+                            console.log(xhr, status, errorThrown);
+                            wrap.remove();
+                            dt.cell( target ).data(org_val);
+                        });
+                        return promise;
+                    })
+                    .always(()=>{
+                        __this._screenLock('stop');
+                    })
+                }
+            })
+            .on('click', '.insert-cancel', function(){
+                $(`#${dtId}-editable-insert-wrapper`)
+                    .css('display','none');
+                $(`#${dtId}-editable-insert-wrapper :input`).each((i, e) =>{
+                    $(e).val("")
+                })
+            })
+
         },
 
 
@@ -1297,7 +1574,7 @@
             const namespace = "."+this.s.namespace
 
             $(document).off(namespace)
-            dt.off(namespace );
+            dt.off(namespace);
             $(dt.table().body()).off( namespace );
             $(document.body).off( namespace );
         },
@@ -1331,14 +1608,18 @@
         /** @type {Boolean} Enable Editable on load */
         enabled: true,
 
+        add:true,
+
+        delete:true,
+
         /** @type {string} default target columns */
-        columns:"all",
+        columns: true,
 
         /** @type {string} default target rows */
-        rows:false,
+        rows: true,
 
         /** @type {string} default target cells */
-        cells:false,
+        cells: null,
 
         /** @type {String} default data name for key to make form data*/
         keyData:false,
@@ -1354,6 +1635,47 @@
 
         /** @type {Array} */
         columnDefs:[],
+
+        language: {
+            "console":{
+                "system" : {
+                    "not_activated" : "DataTables-Editable is not enabled"
+                },
+                "ajax" : {
+                    "no_ajax" : "Warning! Anything you edit on the table not to be saved anywhere becouse the 'ajax' options are not set.",
+                    "no_url" : "Warning! Please set url for saving methods otherwise nothing will be saved"
+                },
+                "cells" : {
+                    "not_array" : "Error! 'cells' option must be set in array of objects which contains 'row' and 'col'",
+                    "wrong_elements": "Error! elements of cell option does not includes 'row' or 'col' ",
+                },
+                "columns": {
+                    "too_many_elements" : "Error! Too many elements are set on 'columns' option. If you want to set all columns editable, do not set 'columns' option.",
+                    "not_number" : "Error! The 'columns' option you set includes elements which is not a Number.",
+                    "wrong_index" : "Error! The 'columns' option includes index which does not exists on table.",
+                    "not_array" : "Error! 'columns' option must be set by Array. If you want to set all columns editable, do not set 'columns' option.",
+                },
+                "rows": {
+                    "not_number" : "Error! The 'rows' option you set includes elements which is not a Number.",
+                    "not_array" : "Error! 'rows' option must be set by Array. If you want to set all rows editable, do not set 'rows' option.",
+                }
+            },
+            "button" : {
+                "add" : "add",
+                "delete" : "delete",
+                "submit" : "submit",
+                "cancel" : "cancel",
+                "validate" : "auto redraw "
+            },
+            "message" : {
+                "submit" : "Save all changes?",
+                "cancel" : "Clear all changes not saved?",
+                "stopRedraw" : "Stopped auto redrawing",
+                "startRedraw" : (type) => `${type} will be redrawn on every cell edit`,
+                "confirmDelete": "Delete selected line?",
+                "insertTitle":"Please insert values"
+            }
+        }
 
     };
 
@@ -1390,6 +1712,14 @@
 
         if( ctx._oEditable ){
              ctx._oEditable.addToFormData(key, data)
+        }
+    });
+
+    Api.register( 'editable().getEditableMap()', function () {
+        var ctx = this.context[0];
+
+        if( ctx._oEditable ){
+             return ctx._oEditable.getEditableMap()
         }
     });
 
