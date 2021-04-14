@@ -16,6 +16,36 @@
     box-sizing:border-box;
 }
 
+.dt-button.org{
+    display: inline-block;
+	width: 160px;
+	padding: 0.8em;
+	text-align: center;
+	text-decoration: none;
+	color: #fff;
+	background:#0C88CA;
+	border-bottom:4px solid #005691;
+	border-radius: 4px;
+	transition: .0s;
+}
+
+.dt-button.org:hover{
+	color: #fff;
+	background:#0C88CA;
+	border-bottom:4px solid #005691;
+	border-radius: 4px;
+	transition: .0s;
+}
+
+.org.buttonOn{
+    cursor: pointer;
+	 text-decoration: none;
+	 background:#005691;
+	 transform: translate3d(0, 4px, 0);
+	 transition: .0s;
+	 border-bottom: none;
+}
+
 table.dataTable tbody td.editable-focus{
     background-color: rgba(255, 238, 89, 1);
     position:relative;
@@ -23,4 +53,37 @@ table.dataTable tbody td.editable-focus{
 
 table.dataTable_editable{
     outline: none;
+}
+
+.editable-insert-wrapper{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateY(-50%) translateX(-50%);
+    -webkit-transform: translateY(-50%) translateX(-50%);
+    padding:3em;
+    display:none;
+    border-radius: 15%;
+    border-width:5px;
+    border-style:solid;
+    border-color:black;
+    background-color:aliceblue;
+}
+
+#dataTable_editable_screenLock{
+    height:100vh;
+    width: 100vw;
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    z-index:9999;
+    background-color:rgba(128,128,128,0.4);
+    text-align: center;
+}
+
+#des_text{
+    width: 100px;
+    line-height: 100vh;
+    font-size: xxx-large;
+    color : black;
 }
