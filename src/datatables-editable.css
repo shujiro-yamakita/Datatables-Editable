@@ -70,6 +70,42 @@ table.dataTable_editable{
     background-color:aliceblue;
 }
 
+.editable-insert-wrapper p{
+
+    margin: 5px 0 10px 0;
+}
+
+.editable-insert-wrapper .title{
+    font-size:large;
+    text-align:center;
+}
+
+.editable-insert-wrapper .insertline{
+    width:max-content;
+    max-width:95vw;
+}
+
+.editable-insert-wrapper .inserttitle{
+    display:inline-block;
+    width:8em;
+}
+
+.editable-insert-wrapper .input{
+    display:inline-block;
+    width:12em;
+}
+
+.editable-insert-wrapper .buttons{
+    text-align:center;
+}
+
+.editable-insert-wrapper button{
+    margin:4px;
+    width:7em;
+}
+
+
+
 #dataTable_editable_screenLock{
     height:100vh;
     width: 100vw;
