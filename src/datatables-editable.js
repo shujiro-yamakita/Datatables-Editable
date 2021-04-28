@@ -929,7 +929,7 @@
        },
 
        _formatDate:function(date, format){
-           const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+           const MONTHS = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May.', 'Jun.', 'Jul.', 'Aug.', 'Sep.', 'Oct.', 'Nov.', 'Dec.'];
            let ret = format.replace('Y', date.getFullYear());
            ret = ret.replace('y', ("" + date.getFullYear()).slice(-2));
            ret = ret.replace('n', (date.getMonth() + 1));
@@ -953,7 +953,8 @@
                    )
                } else {
                    $(ret).append($('<option></option>')
-                    .text(i)
+                        .text(i)
+                        .attr(data == i ? {'selected':'on'} : {})
                     )
                }
            }
