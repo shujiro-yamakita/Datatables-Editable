@@ -8,15 +8,13 @@ Include following libraries in the project(Necessary)
 
 1. jQuery(Greater than 1.10.8)
 2. jquery.dataTables
-
-Follwing libraries may be helpful(Recommended);
-1. dataTables.buttons
+3. dataTables.buttons
 
 Define a DataTable as usual.
 
 Pass to the DataTable constructor at least `editable:true`.
 
-If you use buttons plug-in, you also need to pass `dom` and  `buttons` .
+You also need to pass `dom` and  `buttons` .
 
 ## OPTIONS
 DataTables-Editable accept following options.
@@ -75,6 +73,3 @@ data:data
 ### editable().save()
 
 ### editable().disable()
-
-
-
