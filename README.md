@@ -50,7 +50,7 @@ DataTables-Editable accept following options.
 DataTables-Editable has following methods.
 
 #### editable().enabled()
-Check dataTables-Editable has been activated or not.
+Check dataTables-Editable is activated or not.
 
 return true/false
 
