@@ -59,8 +59,10 @@
 
             /**
             * Enabled setting
-            * @type {Boolean}
+            * @type 。 /.,{Boolean}
             */
+
+
             enabled: false
         };
 
@@ -387,7 +389,7 @@
 
 
 
-            // _focusListenerの起動
+            // activate focusListener
             if ( this.c.enabled !== false ) {
                 this.enable();
             } else {
