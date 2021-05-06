@@ -4,10 +4,10 @@ Simple table editor for jQuery.dataTables.
 This pckage support add, delete and inline editing and send form to server via AJAX
 
 ## USAGE
-Include following libraries in the project(Necessary)
+Include following libraries in the project.
 
-1. jQuery(Greater than 1.10.8)
-2. jquery.dataTables
+1. jQuery
+2. jquery.dataTables(Greater than 1.10.8)
 3. dataTables.buttons
 
 Define a DataTable as usual.
