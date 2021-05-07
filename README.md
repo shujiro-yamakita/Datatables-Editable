@@ -32,19 +32,10 @@ DataTables-Editable accept following options.
 | [`keyData`](#keyData) | string | `false` | |
 | [`validateDraw`](#validateDraw) | | `false` | |
 | [`columnDefs`](#columnDefs) | array | `[]` | Set HTML input type and formulas for pericular column.|
+| [`saveDoneCallback`] | function | | Callback start when saving on server succeed. |
+| [`saveFailCallback`] | function | | Callback start when saving on server fail. |
+| [`saveAlwaysCallback`] | function | | Callback start after saving to server method run. |
 
-#### add
-#### delete
-
-#### columns
-#### rows
-#### cells
-#### inputType
-#### saveType
-#### ajax
-#### keyData
-#### validateDraw
-#### columnDefs
 
 ## METHODS
 DataTables-Editable has following methods.
