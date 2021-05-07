@@ -924,23 +924,35 @@
         */
 
        _inputText: function(target, def){
-           return $('<input></input>')
-               .attr('type', 'text')
-               .val(this.s.dt.cell(target).data())
+           const ret =  $('<input></input>')
+           .attr('type', 'text')
+           .val(this.s.dt.cell(target).data())
+           for(let i in def.attr){
+               $(ret).attr(i, def.attr[i])
+           }
+           return ret;
        },
 
        _inputNumber: function(target, def){
-           return $('<input></input>')
-               .attr('type', 'number')
-               .val(this.s.dt.cell(target).data())
+           const ret =  $('<input></input>')
+           .attr('type', 'number')
+           .val(this.s.dt.cell(target).data())
+           for(let i in def.attr){
+               $(ret).attr(i, def.attr[i])
+           }
+           return ret;
        },
 
        _inputDate: function(target, def){
            const date = new Date(this.s.dt.cell(target).data());
            const value = this._formatDate(date, 'Y-m-d');
-           return $('<input></input>')
-                .attr('type', 'date')
-                .val(value)
+           const ret = $('<input></input>')
+           .attr('type', 'date')
+           .val(value)
+           for(let i in def.attr){
+               $(ret).attr(i, def.attr[i])
+           }
+           return ret;
        },
 
        _formatDate:function(date, format){
@@ -960,6 +972,9 @@
        _inputSelect:function(target, def){
            const data = this.s.dt.cell(target).data();
            const ret = $('<select></select>');
+           for(let i in def.attr){
+               $(ret).attr(i, def.attr[i])
+           }
            for(let i of def.formula){
                if(typeof i === "object"){
                    $(ret).append($('<option></option>')
@@ -979,8 +994,8 @@
        _inputTextarea:function(target, def){
            const data = this.s.dt.cell(target).data();
            const ret = $('<textarea></textarea>').text(data);
-           for(let i in def.formula){
-               $(ret).attr(i, def.formula[i])
+           for(let i in def.attr){
+               $(ret).attr(i, def.attr[i])
            }
            return ret
        },
@@ -1411,15 +1426,15 @@
            })
            .done((xhr, status, errorThrown) => {
                this._stateSave();
-               this.c.ajaxDoneCallback(xhr, status, errorThrown)
+               this.c.saveDoneCallback(xhr, status, errorThrown)
            }).fail((xhr, status, errorThrown)=>{
                alert('saving data failed');
-               this.c.ajaxFailCallback(xhr, status, errorThrown)
+               this.c.saveFailCallback(xhr, status, errorThrown)
            }).always((xhr, status, errorThrown) => {
                this._stateLoad();
                this._initializeFormData();
                this._screenLock('stop');
-               this.c.ajaxAlwaysCallback(xhr, status, errorThrown)
+               this.c.saveAlwaysCallback(xhr, status, errorThrown)
            })
        },
 
