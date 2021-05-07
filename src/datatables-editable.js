@@ -61,10 +61,10 @@
             * Enabled setting
             * @type 。 /.,{Boolean}
             */
-
-
             enabled: false
         };
+
+        this.state = [];
 
         this.className = {
             'WRAPPER' : 'editable-wrapper',
@@ -353,13 +353,11 @@
             this._initializeColumnDefs();
 
             // ajax設定の確認
-            if( this.c.ajax === undefined ){
+            if( this.c.ajax.url === "unset" ){
                 console.warn(this.lang.console.ajax.no_ajax)
             } else {
-                if (this.c.ajax.url === undefined){
+                if (this.c.ajax.url === "unset"){
                     console.warn(this.lang.console.ajax.no_url)
-                } else if (this.c.ajax.type === "undefined") {
-                    this.c.ajax.type === "post"
                 }
             }
 
@@ -367,7 +365,7 @@
             this._initializeFormData();
 
             // テーブルの初期情報
-            this._stateSave()
+            // this._stateSave()
 
 
             /**
@@ -623,17 +621,32 @@
         },
 
         _stateSave:function(){
-            this.s.state = this.s.dt.table().data();
+            const _this = this;
+            this.state = []
+
+            this.s.dt.rows().every( function(rowIdx) {
+                if(Array.isArray(this.data())){
+                    _this.state[rowIdx] = []
+                } else {
+                    _this.state[rowIdx] = {}
+                }
+                for(let i in this.data()){
+                    _this.state[rowIdx][i] = this.data()[i]
+                }
+            })
         },
 
         _stateLoad:function(){
             const dt = this.s.dt;
-            const st = this.s.state;
-
             dt.rows().remove();
-            for(let i = 0; i < st.length; i++){
-                dt.row.add(st[i]);
+            for(let i in this.state){
+                if(Array.isArray(this.state[i])){
+                    dt.row.add([...this.state[i]])
+                } else {
+                    dt.row.add({...this.state[i]});
+                }
             }
+
             dt.draw();
         },
 
@@ -792,7 +805,7 @@
 
            this._addDeleteToFormData(target);
 
-           dt.row(target).remove().draw();
+           dt.row(target).remove();
 
            this._save()
        },
@@ -1281,28 +1294,10 @@
 
                this._addToFormData(target, formed_val);
 
-               if(this.c.saveType === 'auto' && this.c.ajax){
-                   return _this._save().then(() => {
-                       wrap.remove();
-                   })
-                   .fail((xhr, status, errorThrown) => {
-                       const promise = new Promise((resolve, reject)=>{
-                           console.log(xhr, status, errorThrown);
-                           wrap.remove();
-                           dt.cell( target ).data(org_val);
-                       });
-                       return promise;
-                   })
-                   .always(()=>{
-                       _this._screenLock('stop');
-                       $(`.${_this.s.namespace}`).focus()
-                   })
-               } else {
-                   const promise = new Promise((resolve, reject)=>{
-                       resolve(wrap.remove());
-                   });
-                   return promise;
-               }
+               const promise = new Promise(( resolve, reject) => {
+                   _this._save()
+                   resolve(wrap.remove());
+               })
            }
        },
 
@@ -1397,10 +1392,10 @@
            const _this = this;
 
            if(this.c.saveType === "auto"){
-               if(this.c.ajax !== undefined){
+               if(this.c.ajax.url !== "unset"){
                    return this._ajaxSave();
                } else {
-                   this._stateSave
+                   this._stateSave()
                }
            }
        },
@@ -1408,22 +1403,27 @@
        _ajaxSave: function(){
            this._screenLock('start')
            return $.ajax({
-               url:c.ajax.url,
-               type:c.ajax.type,
+               url:this.c.ajax.url,
+               type:this.c.ajax.type || 'post',
                data:this.s.fd,
                processData:false,
                contentType:false,
            })
-           .done((ret) => {
-               _this.stateSave();
-           }).fail((ret)=>{
+           .done((xhr, status, errorThrown) => {
+               this._stateSave();
+               this.c.ajaxDoneCallback(xhr, status, errorThrown)
+           }).fail((xhr, status, errorThrown)=>{
                alert('saving data failed');
-               _this.stateLoad();
-           }).always((ret) => {
-               _this._initializeFormData();
-               _this.screenLock('stop')
+               this.c.ajaxFailCallback(xhr, status, errorThrown)
+           }).always((xhr, status, errorThrown) => {
+               this._stateLoad();
+               this._initializeFormData();
+               this._screenLock('stop');
+               this.c.ajaxAlwaysCallback(xhr, status, errorThrown)
            })
        },
+
+
 
        /**
         * Controll Screen Lock
@@ -1477,7 +1477,7 @@
 
         /**
         * Attach suitable listeners (based on the configuration) that will attach
-        * and detach the TableForm handle in the document.
+        * and detach the Editable handle in the document.
         *
         * @private
         */
@@ -1543,9 +1543,11 @@
                 __this._initializeMap();
             })
 
+
             // ajax読み込み後に編集可能カラムを再設定する
             .on('xhr', function (e, settings, json, xhr) {
                 xhr.then(()=>{
+                    __this._stateSave();
                     __this._initializeMap();
                 })
             })
@@ -1653,6 +1655,23 @@
 
         /** @type {Array} */
         columnDefs:[],
+
+        ajax:{
+            url:"unset",
+            type:"post",
+        },
+
+        saveDoneCallback:(xhr, status, errorThrown) => {
+
+        },
+
+        saveFailCallback:(xhr, status, errorThrown) => {
+
+        },
+
+        saveCallback:(xhr, status, errorThrown) => {
+
+        },
 
         language: {
             "console":{
