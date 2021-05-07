@@ -70,6 +70,7 @@ Set at least _url_ and set others if you need.
 `data`(ajax.data)`object`-If there is data you want to send in addition to the edited data of the table, set the data option.  
 
 simple example  
+
     var table = $('#example').DataTable({
         ajax:"example.json",
         dom: 'Bfrtip',
