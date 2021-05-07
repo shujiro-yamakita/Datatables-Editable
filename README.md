@@ -44,6 +44,7 @@ In the case of select tag, additional settings are required to set options.
 To change the input method for each column, set it with the columnDefs option.
 
 simple example  
+
     var table = $('#example').DataTable({
         ajax:"example.json",
         dom: 'Bfrtip',
