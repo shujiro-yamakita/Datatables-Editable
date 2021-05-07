@@ -21,13 +21,13 @@ DataTables-Editable accept following options.
 
 | Option | Type of accepted value | default | Description |
 | --- | --- | --- | --- |
-| [`add`](#add) | boolean | `true` | Enable to add new line to table |
-| [`delete`](#delete) | boolean | `true` | Enable to delete line from table |
-| [`columns`](#columns) | boolean / array | `true` | Set column index to be editable. All columns are editable on default. |
-| [`rows`](#rows) | boolean / array  | `true` | Set row index to be editable. All rows are editable on default. |
-| [`cells`](#cells) | null / array | `null` | Set perticular cells to be editable. |
-| [`inputType`](#inputType) | string | `text` | Set HTML input type for all editable cell. Following will be accepted `text` `number` `date` `select` `textarea` |
-| [`saveType`](#saveType) | string | `auto` | Set when to run saving method. `auto` Save data on every cell edit done.`manual` Save data when the "save" button is pushed |
+| [`add`] | boolean | `true` | Enable to add new line to table |
+| [`delete`] | boolean | `true` | Enable to delete line from table |
+| [`columns`] | boolean / array | `true` | Set column index to be editable. All columns are editable on default. |
+| [`rows`] | boolean / array  | `true` | Set row index to be editable. All rows are editable on default. |
+| [`cells`] | null / array | `null` | Set perticular cells to be editable. |
+| [`inputType`] | string | `text` | Set HTML input type for all editable cell. Following will be accepted `text` `number` `date` `select` `textarea` |
+| [`saveType`] | string | `auto` | Set when to run saving method. `auto` Save data on every cell edit done.`manual` Save data when the "save" button is pushed |
 | [`ajax`](#ajax) | object | | Set ajax properties. |
 | [`keyData`](#keyData) | string | `false` | |
 | [`validateDraw`](#validateDraw) | | `false` | |
@@ -36,6 +36,32 @@ DataTables-Editable accept following options.
 | [`saveFailCallback`] | function | | Callback start when saving on server fail. |
 | [`saveAlwaysCallback`] | function | | Callback start after saving to server method run. |
 
+#### ajax
+You can send edited data to server by setting _ajax_ option.  
+Set at least _url_ and set others if you need.  
+
+`url`(ajax.url)`string`-Set url to send data.
+---
+`type`(ajax.type)`string`-Set _post_ or _get_. "post" on Default.
+---
+`data`(ajax.data)`object`-If there is data you want to send in addition to the edited data of the table, set the data option.  
+
+##### simple example
+    var table = $('#example').DataTable({
+        ajax:"example.json",
+        dom: 'Bfrtip',
+        editable:{
+            ajax:{
+                url:"example10.php",
+                type:"post",
+                data:{
+                    user:"username",
+                    date:"2021-05-07",
+                }
+            },
+        },
+        buttons: []
+    });
 
 ## METHODS
 DataTables-Editable has following methods.
@@ -48,10 +74,10 @@ return true/false
 #### editable().addToFormData(name, data)
 Add To FormData object used in DataTalbes-Editable.
 
-args
-name:property name
+##### args  
+`name`:property name
 
-data:data
+`data`:data
 
 ### editable().reConstructFormData(name, data)
 
