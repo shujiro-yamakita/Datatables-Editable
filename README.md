@@ -36,17 +36,18 @@ DataTables-Editable accept following options.
 | [`saveFailCallback`] | function | | Callback start when saving on server fail. |
 | [`saveAlwaysCallback`] | function | | Callback start after saving to server method run. |
 
-#### ajax
+### ajax
+
 You can send edited data to server by setting _ajax_ option.  
 Set at least _url_ and set others if you need.  
 
 `url`(ajax.url)`string`-Set url to send data.
----
+
 `type`(ajax.type)`string`-Set _post_ or _get_. "post" on Default.
----
+
 `data`(ajax.data)`object`-If there is data you want to send in addition to the edited data of the table, set the data option.  
 
-##### simple example
+simple example
     var table = $('#example').DataTable({
         ajax:"example.json",
         dom: 'Bfrtip',
