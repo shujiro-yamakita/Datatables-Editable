@@ -57,6 +57,8 @@
             /** @type {object} FormData Object to send server via ajax*/
             fd: new FormData(),
 
+            insCount:0,
+
             /**
             * Enabled setting
             * @type 。 /.,{Boolean}
@@ -611,13 +613,13 @@
         _initializeFormData:function()
         {
             this.s.fd = new FormData()
-            if( this.c.ajax !== undefined){
+            this.s.insCount = 0;
             if( this.c.ajax.data ){
                 const d = this.c.ajax.data;
                 for( let key in d){
                     this.s.fd.append(key, d[key])
                 }
-            }}
+            }
         },
 
         _stateSave:function(){
@@ -638,6 +640,16 @@
 
         _stateLoad:function(){
             const dt = this.s.dt;
+            const qn = this.queryName;
+            const current = {};
+            if($(qn.FOCUS).length > 0){
+                current.column = dt.cell(qn.FOCUS).index().column;
+                current.row = dt.rows({order:'applied'})[0].indexOf(dt.row($(qn.FOCUS)).index())
+            } else {
+                current.row = Object.keys(this.c.map)[0]
+                current.column = Object.keys(current.row)[0]
+            }
+
             dt.rows().remove();
             for(let i in this.state){
                 if(Array.isArray(this.state[i])){
@@ -648,6 +660,7 @@
             }
 
             dt.draw();
+            this._focusCell(current);
         },
 
         /**
@@ -805,7 +818,7 @@
 
            this._addDeleteToFormData(target);
 
-           dt.row(target).remove();
+           dt.row(target).remove().draw();
 
            this._save()
        },
@@ -867,7 +880,7 @@
                const name = dt.context[0].aoColumns[i].mData
                const val = $(`#${dtId}-editable-insert-wrapper :input[name=${name}]`).val() || "";
 
-               this.s.fd.append(`inserts[${unique}][${name}]`,val);
+               this.s.fd.append(`inserts[${this.s.insCount}][${name}]`,val);
            }
        },
 
@@ -1275,27 +1288,13 @@
        _checkInputData:function(){
 
            const dt = this.s.dt;
-           const c = this.c;
-           const _this = this;
 
            const target = $(`.${this.s.namespace} ${this.queryName.FOCUS}`);
 
            const wrap = $(target).find(this.queryName.WRAPPER)
            const org_val = dt.cell(target).data();
-           let formed_val;
-           if($(wrap).attr('type') === "date"){
-               const col = dt.cell(target).index().column;
-               const date = new Date($(wrap).val());
-               for(let def of c.columnDefs){
-                   if(def.target.includes(col)){
-                       formed_val = _this._formatDate(date, def.format || "Y-m-d")
-                   }
-               }
-           }else if($(wrap).attr('type') === "number"){
-               formed_val = Number($(wrap).val())
-           } else {
-               formed_val = $(wrap).val();
-           }
+
+           const formed_val = this._formValue(target);
 
            if(org_val == formed_val){
                const promise = new Promise((resolve, reject)=>{
@@ -1309,11 +1308,33 @@
 
                this._addToFormData(target, formed_val);
 
-               const promise = new Promise(( resolve, reject) => {
-                   _this._save()
-                   resolve(wrap.remove());
+               return this._save().then( () =>{
+                   wrap.remove()
                })
            }
+       },
+
+       _formValue:function(target){
+           const dt = this.s.dt;
+           const c = this.c;
+           const wrap = $(target).find(this.queryName.WRAPPER)
+           let formed_val;
+
+           if($(wrap).attr('type') === "date"){
+               const col = dt.cell(target).index().column;
+               const date = new Date($(wrap).val());
+               for(let def of c.columnDefs){
+                   if(def.target.includes(col)){
+                       formed_val = this._formatDate(date, def.format || this.c.format)
+                   }
+               }
+           }else if($(wrap).attr('type') === "number"){
+               formed_val = Number($(wrap).val())
+           } else {
+               formed_val = $(wrap).val();
+           }
+
+           return formed_val
        },
 
        /**
@@ -1327,9 +1348,7 @@
 
            const key = this.c.keyData ? dt.row(target).data()[this.c.keyData] : dt.row(target).index();
            const tcol = dt.columns()[0].indexOf(dt.column(target).index());
-           const name = dt.context[0].aoColumns[tcol].name
-                        || $(dt.column(tcol).header()).data('name')
-                        || $(dt.column(tcol).header()).text();
+           const name = dt.context[0].aoColumns[tcol].mData
            this.s.fd.append(`updates[${key}][${name}]`, val);
        },
 
@@ -1344,7 +1363,10 @@
            const v = this.c.validateDraw;
            const on = this.s.VDSwitch;
            const sbody = $($(dt.cell(target).node()).parents('div')[0]);
-           const cs = {top:sbody.scrollTop(), left:sbody.scrollLeft()};
+           const cs = {
+               top:sbody.scrollTop(),
+               left:sbody.scrollLeft()
+           };
 
            if( v === "cell" && on){
                dt.cell( target ).invalidate().draw();
@@ -1355,6 +1377,8 @@
            } else if( v === "table" && on){
                dt.rows().invalidate().draw();
                sbody.scrollTop(cs.top).scrollLeft(cs.left);
+           } else {
+               dt.cell( target ).draw();
            }
 
 
@@ -1386,7 +1410,7 @@
                dt.on('blur'+namespace, q.WRAPPER, function(){
                    _this._checkInputData()
                })
-               $(namespace).focus();
+               $(namespace).trigger('focus');
            })
            return promise
        },
@@ -1402,15 +1426,18 @@
 
        },
 
-       _save:function(){
-           const c = this.c;
+       _save:function(hardFlag = false){
            const _this = this;
 
-           if(this.c.saveType === "auto"){
+           if(this.c.saveType === "auto" || hardFlag ){
                if(this.c.ajax.url !== "unset"){
                    return this._ajaxSave();
                } else {
-                   this._stateSave()
+                   const promise = new Promise((resolve, reject) => {
+                       _this._stateSave();
+                       _this._stateLoad();
+                   })
+                   return promise;
                }
            }
        },
@@ -1426,15 +1453,15 @@
            })
            .done((xhr, status, errorThrown) => {
                this._stateSave();
-               this.c.saveDoneCallback(xhr, status, errorThrown)
+               this.c.onSaveDone(xhr, status, errorThrown)
            }).fail((xhr, status, errorThrown)=>{
                alert('saving data failed');
-               this.c.saveFailCallback(xhr, status, errorThrown)
+               this.c.onSaveFailed(xhr, status, errorThrown)
            }).always((xhr, status, errorThrown) => {
                this._stateLoad();
                this._initializeFormData();
                this._screenLock('stop');
-               this.c.saveAlwaysCallback(xhr, status, errorThrown)
+               this.c.onSave(xhr, status, errorThrown)
            })
        },
 
@@ -1572,15 +1599,11 @@
             $(`#${dtId}_editable_btns`)
             .on('click', `#${dtId}_editable_submit`, function(){
                 alert('Saving all changes')
-                __this._save().then(()=>{
-                    dt.ajax.reload(()=>{
-                        __this._screenLock('stop');
-                    }, false);
-                })
+                __this._save(true)
             })
             .on('click', `#${dtId}_editable_cancel`, function(){
                 if(confirm('Clear all changes not saved?')){
-                    dt.ajax.reload();
+                    __this.stateLoad();
                 }
             })
 
@@ -1662,6 +1685,9 @@
         /** @type {string} default wrap input type */
         inputType: "text",
 
+        /** @type {string} default dateFormat to display */
+        format:"Y-m-d",
+
         /** @type {Boolean} default draw type*/
         validateDraw: false,
 
@@ -1676,15 +1702,15 @@
             type:"post",
         },
 
-        saveDoneCallback:(xhr, status, errorThrown) => {
+        onSaveDone:(xhr, status, errorThrown) => {
 
         },
 
-        saveFailCallback:(xhr, status, errorThrown) => {
+        onSaveFail:(xhr, status, errorThrown) => {
 
         },
 
-        saveCallback:(xhr, status, errorThrown) => {
+        onSave:(xhr, status, errorThrown) => {
 
         },
 

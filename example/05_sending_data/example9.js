@@ -1,27 +1,21 @@
 $(document).ready(function() {
 
-    var columns = [{
-        title: "Id",
-        data: "id"
-    }, {
+    var columns = [ {
+        title:"id",
+    },{
         title: "Name",
-        data: "name"
     }, {
         title: "Position",
-        data:"position"
     }, {
         title: "Office",
-        data:"office"
     }, {
         title: "Extn.",
-        data:"extn"
     }, {
         title: "Start date",
-        data:"start_date"
     }, {
         title: "Salary",
-        data:"salary"
     }];
+
 
 
     myTable = $('#example').DataTable({
@@ -32,9 +26,12 @@ $(document).ready(function() {
         responsive: true,
         editable:{
             ajax:{
-                url:"example9.php",
+                url:"example.php",
             },
-            keyData:'id',
+            onSave:(xhr, status, errorThrows) => {
+                console.log(xhr)
+            },
+            keyData:'0',
             columns:[1,2,3,4,5,6],
             columnDefs:[
                 {

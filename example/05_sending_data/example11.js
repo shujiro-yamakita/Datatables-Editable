@@ -1,48 +1,20 @@
 $(document).ready(function() {
 
-    var columns = [{
-        title: "Id",
-        data: "id",
-    }, {
-        title: "Name",
-        data: "name",
-    }, {
-        title: "Position",
-        data:"position",
-    }, {
-        title: "Office",
-        data:"office",
-    }, {
-        title: "Extn.",
-        data:"extn",
-    }, {
-        title: "Start date",
-        data:"start_date",
-    }, {
-        title: "Salary",
-        data:"salary",
-    }];
-
 
     myTable = $('#example').DataTable({
         "sPaginationType": "full_numbers",
-        ajax:"example10.txt",
-        columns: columns,
         dom: 'Bfrtip',        // Needs button container
         responsive: true,
         editable:{
             ajax:{
                 url:"example.php",
-                data:{
-                    user:"username",
-                    dateTime: new Date(),
-                }
             },
             onSave:(xhr, status, errorThrows) => {
                 console.log(xhr)
             },
-            keyData:'id',
+            keyData:'0',
             columns:[1,2,3,4,5,6],
+            format:'Y/m/d',
             columnDefs:[
                 {
                     target:[3],
@@ -64,7 +36,6 @@ $(document).ready(function() {
                 {
                     target:[5],
                     inputType:'date',
-                    format:'Y/m/d',
                 },
             ],
         },
