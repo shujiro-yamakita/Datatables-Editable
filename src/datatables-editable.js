@@ -284,7 +284,7 @@
             return this;
         },
 
-        reConstructFormData: function(key, data = null)
+        reInilializeFormData: function(key, data = null)
         {
             this.c.ajax.data = {};
             this.s.fd = new FormData();

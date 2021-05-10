@@ -1,7 +1,7 @@
 # DataTables-Editable
 Simple table editor for jQuery.dataTables.
 
-This pckage support add, delete and inline editing and send form to server via AJAX
+This pckage support adding line, deleting line, direct editing of a cell and send form to server via ajax
 
 ## USAGE
 Include following libraries in the project.
@@ -22,21 +22,21 @@ _keyData_ can be changed by option.
 
     {
         updates:{
-            _keyData_ : {
-                _name_ : _data_
+            keyData : {
+                name : data
             },
-            _keyData_:{
-                _name_ : _data_
+            keyData:{
+                name : data
             },
         },
         inserts:[
             {
-                _name_ : _data_,
-                _name_ : _data_,...
+                name : data,
+                name : data,...
             },
         ],
         deletes:[
-            _keyData_ , _keyData_, ....
+            keyData , keyData, ....
         ]
     }
 
@@ -139,14 +139,15 @@ _*CAUTION It is not checked whether the data in the set column has a unique valu
 Callback runs after saving data to server via ajax.
 
 ## METHODS
-DataTables-Editable has following methods.
+DataTables-Editable has following methods.  
+Please wait for a while until the explanation is completed
 
-#### editable().enabled()
+### editable().enabled()
 Check dataTables-Editable is activated or not.
 
 return true/false
 
-#### editable().addToFormData(name, data)
+### editable().addToFormData(name, data)
 Add To FormData object used in DataTalbes-Editable.
 
 ##### args  
@@ -154,14 +155,11 @@ Add To FormData object used in DataTalbes-Editable.
 
 `data`:data
 
-### editable().reConstructFormData(name, data)
-
+### editable().reInitializeFormData(name, data)
 ### editable().setEditableColumns(array)
 ### editable().setEditableRows(array)
 ### editable().setEditableCells(array)
 ### editable().getEditableMap()
-
 ### editable().toggleValidateDraw()
 ### editable().save()
-
 ### editable().disable()
