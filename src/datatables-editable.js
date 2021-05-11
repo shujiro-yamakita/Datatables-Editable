@@ -1388,8 +1388,6 @@
            } else if( v === "table" && on){
                dt.rows().invalidate().draw();
                sbody.scrollTop(cs.top).scrollLeft(cs.left);
-           } else {
-               dt.cell( target ).draw();
            }
 
 

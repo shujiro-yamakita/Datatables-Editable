@@ -68,7 +68,6 @@ $(document).ready(function() {
                 },
             ],
             saveType:"manual",
-            validateDraw:"table",
         },
         buttons: []
     });

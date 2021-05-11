@@ -63,7 +63,7 @@ $(document).ready(function() {
     dom: 'Bfrtip',        // Needs button container
     responsive: true,
     editable:true,
-    buttons: []
+    buttons: [],
   });
 
 
