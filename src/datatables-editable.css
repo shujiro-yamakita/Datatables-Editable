@@ -16,8 +16,8 @@
     box-sizing:border-box;
 }
 
-.dt-button.org{
-    display: inline-block;
+.dt-button.editable-buttons{
+    /* display: inline-block;
 	width: 160px;
 	padding: 0.8em;
 	text-align: center;
@@ -26,18 +26,18 @@
 	background:#0C88CA;
 	border-bottom:4px solid #005691;
 	border-radius: 4px;
-	transition: .0s;
+	transition: .0s; */
 }
 
-.dt-button.org:hover{
-	color: #fff;
+.dt-button.editable-buttons:hover{
+	/* color: #fff;
 	background:#0C88CA;
 	border-bottom:4px solid #005691;
 	border-radius: 4px;
-	transition: .0s;
+	transition: .0s; */
 }
 
-.org.buttonOn{
+.editable-buttons.buttonOn{
     cursor: pointer;
 	 text-decoration: none;
 	 background:#005691;

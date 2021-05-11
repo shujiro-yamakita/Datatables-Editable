@@ -675,13 +675,13 @@
             const VDMSG = {
                 0:{
                     message: type => this.lang.message.stopRedraw,
-                    current:'buttonOn',
-                    oposit:'org'
+                    // current:"editable-buttons-on",
+                    // oposit:"editable-buttons"
                 },
                 1:{
                     message: type => this.lang.message.startRedraw(type),
-                    current:'org',
-                    oposit:'buttonOn'
+                    // current:"editable-buttons",
+                    // oposit:"editable-buttons-on"
                 }
             }
 
@@ -689,16 +689,16 @@
                 dt.button().add(0, {
                     action : function (e, dt, button , config) {
                         if(confirm(_this.lang.message.submit)){
-                            _this._save();
+                            _this._save(true);
                         }
                     },
-                    className:"org",
+                    className:"editable-buttons",
                     text:this.lang.button.submit,
                 })
                 dt.button().add(1, {
                     action : function (e, dt, button, config) {
                         if(confirm(_this.lang.message.cancel)){
-                            _this.stateLoad();
+                            _this._stateLoad();
                             _this._initializeFormData();
                         }
                     },
@@ -716,7 +716,7 @@
                                 dt.rows().invalidate().draw();
                             }
                         },
-                        className:"org buttonOn",
+                        className:"editable-buttons buttonOn",
                         text:this.lang.button.validate,
                     })
                 }
@@ -732,7 +732,8 @@
                 action : function(e, dt, button, config) {
                     _this._showInsertWindow();
                 },
-                text:this.lang.button.add
+                text:this.lang.button.add,
+                className:"editable-buttons",
             })
         },
 
@@ -747,7 +748,8 @@
                         _this._deleteLine()
                     }
                 },
-                text:this.lang.button.delete
+                text:this.lang.button.delete,
+                className:"editable-buttons",
             })
         },
 
@@ -862,8 +864,22 @@
                    arflag = false;
                }
                const val = $(`#${dtId}-editable-insert-wrapper :input[name=${name}]`).val() || null;
+               const type = $(`#${dtId}-editable-insert-wrapper :input[name=${name}]`).attr('type');
 
-               set[name] = val;
+               if(type === "date"){
+                   const date = new Date(val);
+                   let formed_val;
+                   for(let def of this.c.columnDefs){
+                       if(def.target.includes(i)){
+                           formed_val = this._formatDate(date, def.format || this.c.format)
+                       }
+                   }
+                   set[name] = formed_val;
+               } else if(type === "number"){
+                   set[name] = Number(val)
+               } else {
+                   set[name] = val;
+               }
            }
            if(arflag){
               set =  Object.keys(set).map(key => set[key])
@@ -1108,7 +1124,6 @@
        _move:function(way, rememberFlag = false){
            const dt = this.s.dt;
            const qn = this.queryName;
-           const map = this.c.map;
 
            const ways = {
                up: {row:-1, column:0},
@@ -1261,7 +1276,6 @@
 
        _scrollToCell:function(target){
            const dt = this.s.dt;
-           // const sbody = $(dt.tables().nodes()).parents('.dataTables_scrollBody')
            const sbody = this._checkFixedColumns()
                         ? $($(dt.cell(target).fixedNode()).parents('div')[0])
                         :  $($(dt.cell(target).node()).parents('div')[0])
@@ -1302,13 +1316,10 @@
                });
                return promise;
            }else{
-               dt.cell( target ).data(formed_val);
-
-               this._controllDrawing(target);
-
-               this._addToFormData(target, formed_val);
-
-               return this._save().then( () =>{
+               dt.cell( target ).data(formed_val)
+               this._controllDrawing(target)
+               this._addToFormData(target,formed_val)
+               return this._save().then(()=>{
                    wrap.remove()
                })
            }
@@ -1384,16 +1395,6 @@
 
        },
 
-       _formValues:function(org, val){
-           let ret;
-           if($(target).hasClass(this.className.TEXT_DATE_CLASS)){
-               ret = this.dateFormatChecker(val);
-           } else {
-               ret = val === "" ? null : val;
-           }
-           return ret;
-       },
-
        _revertChange:function(){
            const dt = this.s.dt;
            const namespace = '.'+this.s.namespace;
@@ -1434,11 +1435,20 @@
                    return this._ajaxSave();
                } else {
                    const promise = new Promise((resolve, reject) => {
-                       _this._stateSave();
-                       _this._stateLoad();
+                       resolve(
+                           _this._stateSave(),
+                           _this._stateLoad()
+                       );
                    })
                    return promise;
                }
+           } else {
+               const promise =  new Promise((resolve, reject) => {
+                   resolve()
+               })
+
+               return promise;
+
            }
        },
 
@@ -1596,16 +1606,6 @@
 
             const dtId = dt.settings()[0].sTableId
 
-            $(`#${dtId}_editable_btns`)
-            .on('click', `#${dtId}_editable_submit`, function(){
-                alert('Saving all changes')
-                __this._save(true)
-            })
-            .on('click', `#${dtId}_editable_cancel`, function(){
-                if(confirm('Clear all changes not saved?')){
-                    __this.stateLoad();
-                }
-            })
 
             $(`#${dtId}-editable-insert-wrapper`)
             .on('click', '.insert-submit', function(){
