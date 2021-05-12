@@ -59,160 +59,14 @@
 
             insCount:0,
 
+            state:[],
+
             /**
             * Enabled setting
             * @type 。 /.,{Boolean}
             */
-            enabled: false
+            enabled: false,
         };
-
-        this.state = [];
-
-        this.className = {
-            'WRAPPER' : 'editable-wrapper',
-            'FOCUS' : 'editable-focus',
-            'INSERT_BOX' : 'editable-insert-wrapper',
-        }
-
-        this.queryName = {
-            'WRAPPER' : `.${this.className.WRAPPER}`,
-            'FOCUS' : `.${this.className.FOCUS}`,
-            'INSERT_BOX' : `.${this.className.INSERT_BOX}`,
-        }
-
-        //keyStatus
-        this.functionKeysForFocus = {
-            9:{ //tab
-                func:'_moveAndRemember',
-                arguments:'right',
-            },
-            13:{ //Enter
-                func:'_lineFeed',
-                arguments:'down',
-            },
-            16:{ //shift
-                func:'_statePress',
-                arguments:16,
-            },
-            17:{ //ctrl
-                func:'_statePress',
-                arguments:17,
-            },
-            33:{ //pageup
-                func:'_go',
-                arguments:'end',
-            },
-            34:{ //pagedown
-                func:'_go',
-                arguments:'end',
-            },
-            35:{ //end
-                func:'_go',
-                arguments:'end',
-            },
-            36:{ //home
-                func:'_go',
-                arguments:'home',
-            },
-            37:{ //左矢印
-                func:'_move',
-                arguments:'left',
-            },
-            38:{ //上矢印
-                func:'_move',
-                arguments:'up',
-            },
-            39:{ //右矢印
-                func:'_move',
-                arguments:'right',
-            },
-            40:{ //下矢印
-                func:'_move',
-                arguments:'down',
-            },
-            113:{ //F2
-                func:'_focusOn',
-                araguments:null,
-            }
-        }
-
-        this.functionKeysForWrapper = {
-            9:{ //tab
-                func:'_moveAndRememberAndFocus',
-                arguments:'right',
-            },
-            13:{ //Enter
-                func:'_lineFeedAndFocus',
-                arguments:'down',
-            },
-            16:{ //shift
-                func:'_statePress',
-                arguments:16,
-            },
-            17:{ //ctrl
-                func:'_statePress',
-                arguments:17,
-            },
-            27:{ //esc
-                func:'_revertChange',
-                arguments:null,
-            },
-        }
-
-        this.functionKeysForUp = [
-            16, //shift
-            17, //ctrl
-        ];
-
-        this.functionKeysWithStatePressForFocus = {
-            16:{ //shift
-                9:{ //tab
-                    func:'_move',
-                    arguments:'left',
-                },
-                13:{ //Enter
-                    func:'_move',
-                    arguments:'up',
-                },
-            },
-            17:{ //ctrl
-                37:{ //ctrl + left arrow
-                    func:'_go',
-                    arguments:'leftEnd',
-                },
-                38:{ // ctrl + up arrow
-                    func:'_go',
-                    arguments:'top',
-                },
-                39:{ // ctrl + right arrow
-                    func:'_go',
-                    arguments:'rightEnd',
-                },
-                40:{ // ctrl + down arrow
-                    func:'_go',
-                    arguments:'bottom',
-                }
-            }
-        }
-
-        this.functionKeysWithStatePressForWrapper = {
-            16:{ //shift
-                9:{ //tab
-                    func:'_moveAndFocus',
-                    arguments:'left',
-                },
-                13:{ //Enter
-                    func:'_moveAndFocus',
-                    arguments:'up',
-                },
-            },
-            17:{
-                13:{ //Enter
-                    func:'_checkInputData',
-                    arguments:null,
-                },
-            }
-        }
 
         /* Constructor logic */
         this._constructor();
@@ -620,23 +474,23 @@
 
         _stateSave:function(){
             const _this = this;
-            this.state = []
+            this.s.state = []
 
             this.s.dt.rows().every( function(rowIdx) {
                 if(Array.isArray(this.data())){
-                    _this.state[rowIdx] = []
+                    _this.s.state[rowIdx] = []
                 } else {
-                    _this.state[rowIdx] = {}
+                    _this.s.state[rowIdx] = {}
                 }
                 for(let i in this.data()){
-                    _this.state[rowIdx][i] = this.data()[i]
+                    _this.s.state[rowIdx][i] = this.data()[i]
                 }
             })
         },
 
         _stateLoad:function(){
             const dt = this.s.dt;
-            const qn = this.queryName;
+            const qn = Editable.queryName;
             const current = {};
             if($(qn.FOCUS).length > 0){
                 current.column = dt.cell(qn.FOCUS).index().column;
@@ -647,13 +501,15 @@
             }
 
             dt.rows().remove();
-            for(let i in this.state){
-                if(Array.isArray(this.state[i])){
-                    dt.row.add([...this.state[i]])
+            for(let i in this.s.state){
+                if(Array.isArray(this.s.state[i])){
+                    dt.row.add([...this.s.state[i]])
                 } else {
-                    dt.row.add({...this.state[i]});
+                    dt.row.add({...this.s.state[i]});
                 }
             }
+
+            this.s.insCount = 0;
 
             dt.draw();
             this._focusCell(current);
@@ -753,7 +609,7 @@
             const toUp = str => str.charAt(0).toUpperCase() + str.slice(1);
 
             const box = $('<div></div>')
-                .addClass(this.className.INSERT_BOX)
+                .addClass(Editable.className.INSERT_BOX)
                 .attr('id', `${dtId}-editable-insert-wrapper`);
 
             const title = $('<p></p>')
@@ -807,7 +663,7 @@
            const c = this.c;
            const _this = this;
 
-           const target = $(`.${this.s.namespace} ${this.queryName.FOCUS}`);
+           const target = $(`.${this.s.namespace} ${Editable.queryName.FOCUS}`);
 
            this._addDeleteToFormData(target);
 
@@ -903,6 +759,7 @@
 
                this.s.fd.append(`inserts[${this.s.insCount}][${name}]`,val);
            }
+           this.s.insCount++;
        },
 
        _activateCell:function(target)
@@ -926,11 +783,11 @@
 
            $(box).outerWidth( $(target).outerWidth() );
            $(box).outerHeight( $(target).outerHeight() );
-           $(box).addClass(this.className.WRAPPER);
+           $(box).addClass(Editable.className.WRAPPER);
 
            $(dt.cell(target).nodes()).append(box);
-           $(this.queryName.WRAPPER).trigger('focus');
-           $(this.queryName.WRAPPER).trigger('select');
+           $(Editable.queryName.WRAPPER).trigger('focus');
+           $(Editable.queryName.WRAPPER).trigger('select');
 
            return true;
 
@@ -1068,7 +925,7 @@
         * @return {[type]} [description]
         */
        _focusOn:function(){
-           const target = $(`.${this.s.namespace} ${this.queryName.FOCUS}`)[0];
+           const target = $(`.${this.s.namespace} ${Editable.queryName.FOCUS}`)[0];
 
            this._activateCell(target);
        },
@@ -1146,7 +1003,7 @@
 
        _move:function(way, rememberFlag = false){
            const dt = this.s.dt;
-           const qn = this.queryName;
+           const qn = Editable.queryName;
 
            const ways = {
                up: {row:-1, column:0},
@@ -1183,7 +1040,7 @@
        _andFocus:function(callback){
            const dt = this.s.dt;
            const namespace = '.'+this.s.namespace;
-           const q = this.queryName;
+           const q = Editable.queryName;
            dt.off('blur'+namespace, q.WRAPPER)
            this._checkInputData().then(()=>{
                callback()
@@ -1234,7 +1091,7 @@
 
        _go:function(where){
            const dt = this.s.dt;
-           const qn = this.queryName;
+           const qn = Editable.queryName;
            const map = this.c.map;
            const rows = Object.keys(map);
            const current = {};
@@ -1257,8 +1114,8 @@
 
        _focusCell:function(cell, rememberFlag = false){
            const dt = this.s.dt;
-           const cn = this.className;
-           const qn = this.queryName;
+           const cn = Editable.className;
+           const qn = Editable.queryName;
 
            const target = {
                row:dt.rows({order:'applied'})[0][cell.row],
@@ -1326,9 +1183,9 @@
 
            const dt = this.s.dt;
 
-           const target = $(`.${this.s.namespace} ${this.queryName.FOCUS}`);
+           const target = $(`.${this.s.namespace} ${Editable.queryName.FOCUS}`);
 
-           const wrap = $(target).find(this.queryName.WRAPPER)
+           const wrap = $(target).find(Editable.queryName.WRAPPER)
            const org_val = dt.cell(target).data();
 
            const formed_val = this._formValue(target);
@@ -1351,7 +1208,7 @@
        _formValue:function(target){
            const dt = this.s.dt;
            const c = this.c;
-           const wrap = $(target).find(this.queryName.WRAPPER)
+           const wrap = $(target).find(Editable.queryName.WRAPPER)
            let formed_val;
 
            if($(wrap).attr('type') === "date"){
@@ -1405,7 +1262,7 @@
        _revertChange:function(){
            const dt = this.s.dt;
            const namespace = '.'+this.s.namespace;
-           const q = this.queryName;
+           const q = Editable.queryName;
            const target = $(namespace +" " + q.FOCUS);
            const wrap = $(target).find(q.WRAPPER)
            const _this = this;
@@ -1425,8 +1282,8 @@
 
        _removeClasses:function(){
            const dt = this.s.dt;
-           const c = this.className;
-           const q = this.queryName;
+           const c = Editable.className;
+           const q = Editable.queryName;
 
            $(dt.table().node()).removeClass(this.s.namespace);
            $(dt.table().node()).find(q.WRAPPER).remove();
@@ -1545,8 +1402,8 @@
             const __this = this;
             const dt = this.s.dt;
             const namespace = "."+this.s.namespace;
-            const c = this.className;
-            const q = this.queryName;
+            const c = Editable.className;
+            const q = Editable.queryName;
 
             const wrapper = () => {return $(q.WRAPPER).length > 0};
             const focus = () => {return $(q.FOCUS).length > 0};
@@ -1556,9 +1413,9 @@
             $(document)
             .on('keydown', `${namespace}`, function(e){
                 if(wrapper()){
-                    let f = __this.functionKeysForWrapper[e.keyCode];
+                    let f = Editable.functionKeysForWrapper[e.keyCode];
                     if(__this.keyOnPress){
-                        f = __this.functionKeysWithStatePressForWrapper[__this.keyOnPress][e.keyCode];
+                        f = Editable.functionKeysWithStatePressForWrapper[__this.keyOnPress][e.keyCode];
                     }
                     if(f !== undefined){
                         e.preventDefault();
@@ -1566,9 +1423,9 @@
                         __this[f.func](f.arguments);
                     }
                 } else if(focus()){
-                    let f = __this.functionKeysForFocus[e.keyCode];
+                    let f = Editable.functionKeysForFocus[e.keyCode];
                     if(__this.keyOnPress){
-                        f = __this.functionKeysWithStatePressForFocus[__this.keyOnPress][e.keyCode];
+                        f = Editable.functionKeysWithStatePressForFocus[__this.keyOnPress][e.keyCode];
                     }
                     if(f !== undefined){
                         e.preventDefault();
@@ -1578,7 +1435,7 @@
 
             })
             .on('keyup', namespace, function(e){
-                if(__this.functionKeysForUp.indexOf(e.keyCode) >= 0){
+                if(Editable.functionKeysForUp.indexOf(e.keyCode) >= 0){
                     __this.keyOnPress = false;
                 }
             });
@@ -1763,6 +1620,154 @@
 
     };
 
+    /*
+    * classnames
+     */
+     Editable.className = {
+         'WRAPPER' : 'editable-wrapper',
+         'FOCUS' : 'editable-focus',
+         'INSERT_BOX' : 'editable-insert-wrapper',
+     }
+
+     Editable.queryName = {
+         'WRAPPER' : `.${Editable.className.WRAPPER}`,
+         'FOCUS' : `.${Editable.className.FOCUS}`,
+         'INSERT_BOX' : `.${Editable.className.INSERT_BOX}`,
+     }
+
+     //keyStatus
+     Editable.functionKeysForFocus = {
+         9:{ //tab
+             func:'_moveAndRemember',
+             arguments:'right',
+         },
+         13:{ //Enter
+             func:'_lineFeed',
+             arguments:'down',
+         },
+         16:{ //shift
+             func:'_statePress',
+             arguments:16,
+         },
+         17:{ //ctrl
+             func:'_statePress',
+             arguments:17,
+         },
+         33:{ //pageup
+             func:'_go',
+             arguments:'end',
+         },
+         34:{ //pagedown
+             func:'_go',
+             arguments:'end',
+         },
+         35:{ //end
+             func:'_go',
+             arguments:'end',
+         },
+         36:{ //home
+             func:'_go',
+             arguments:'home',
+         },
+         37:{ //左矢印
+             func:'_move',
+             arguments:'left',
+         },
+         38:{ //上矢印
+             func:'_move',
+             arguments:'up',
+         },
+         39:{ //右矢印
+             func:'_move',
+             arguments:'right',
+         },
+         40:{ //下矢印
+             func:'_move',
+             arguments:'down',
+         },
+         113:{ //F2
+             func:'_focusOn',
+             araguments:null,
+         }
+     }
+
+     Editable.functionKeysForWrapper = {
+         9:{ //tab
+             func:'_moveAndRememberAndFocus',
+             arguments:'right',
+         },
+         13:{ //Enter
+             func:'_lineFeedAndFocus',
+             arguments:'down',
+         },
+         16:{ //shift
+             func:'_statePress',
+             arguments:16,
+         },
+         17:{ //ctrl
+             func:'_statePress',
+             arguments:17,
+         },
+         27:{ //esc
+             func:'_revertChange',
+             arguments:null,
+         },
+     }
+
+     Editable.functionKeysForUp = [
+         16, //shift
+         17, //ctrl
+     ];
+
+     Editable.functionKeysWithStatePressForFocus = {
+         16:{ //shift
+             9:{ //tab
+                 func:'_move',
+                 arguments:'left',
+             },
+             13:{ //Enter
+                 func:'_move',
+                 arguments:'up',
+             },
+         },
+         17:{ //ctrl
+             37:{ //ctrl + left arrow
+                 func:'_go',
+                 arguments:'leftEnd',
+             },
+             38:{ // ctrl + up arrow
+                 func:'_go',
+                 arguments:'top',
+             },
+             39:{ // ctrl + right arrow
+                 func:'_go',
+                 arguments:'rightEnd',
+             },
+             40:{ // ctrl + down arrow
+                 func:'_go',
+                 arguments:'bottom',
+             }
+         }
+     }
+
+     Editable.functionKeysWithStatePressForWrapper = {
+         16:{ //shift
+             9:{ //tab
+                 func:'_moveAndFocus',
+                 arguments:'left',
+             },
+             13:{ //Enter
+                 func:'_moveAndFocus',
+                 arguments:'up',
+             },
+         },
+         17:{
+             13:{ //Enter
+                 func:'_checkInputData',
+                 arguments:null,
+             },
+         }
+     }
 
     /*
     * API

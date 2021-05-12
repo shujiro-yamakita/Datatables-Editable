@@ -51,9 +51,9 @@ DataTables-Editable accept following options.
 | `rows` | boolean / array  | `true` | Set row index to be editable. All rows are editable on default. |
 | `cells` | null / array | `null` | Set perticular cells to be editable. |
 | [`inputType`](#inputType) | string | `text` | Set HTML input type for all editable cell. Following will be accepted `text` `number` `date` `select` `textarea` |
-| `attr` | object | `{}` | Add attirbute to the input tab |
-| `format` | object | `Y-m-d` | Set the format when changed on the input tab of type date |
-| `formula` | object | `{}` | Setting option tabs when using select tab |
+| `attr` | object | `{}` | Add attirbute to the input tag |
+| `format` | object | `Y-m-d` | Set the format when changed on the input tag of type date |
+| `formula` | object | `{}` | Setting option tags when using select tag |
 | `columnDefs` | array | `[]` | Set HTML input type and other settings for pericular column.|
 | [`saveType`](#saveType) | string | `auto` | Set when to run saving method.   `auto` Save data on every cell edit done.  `manual` Save data when the "save" button is pushed |
 | [`ajax`](#ajax) | object | | Set ajax properties. |
@@ -66,9 +66,9 @@ DataTables-Editable accept following options.
 ### inputType
 `text`,`number`,`date`,`select`,`textarea`
 
-Set the type of the input tab displayed at the time of input.
-To customise input tab, `attr`,`foramt`,`formula` options are ready.
-In the case of select tag, format option is required to set option tabs.  
+Set the type of the input tag displayed at the time of input.
+To customise input tag, `attr`,`foramt`,`formula` options are ready.
+In the case of select tag, format option is required to set option tags.  
 To change the input method for each column, set it with the columnDefs option.
 
 simple example  
