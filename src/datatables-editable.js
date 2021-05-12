@@ -80,7 +80,7 @@
             'INSERT_BOX' : `.${this.className.INSERT_BOX}`,
         }
 
-        //キーステータスの登録
+        //keyStatus
         this.functionKeysForFocus = {
             9:{ //tab
                 func:'_moveAndRemember',
@@ -366,10 +366,6 @@
             // FormDataの初期化
             this._initializeFormData();
 
-            // テーブルの初期情報
-            // this._stateSave()
-
-
             /**
              * DOM settings
              */
@@ -397,10 +393,10 @@
             }
 
 
-            // 対象テーブルにクラス名を追加
+
             $(dt.table().node()).addClass('dataTable_editable')
             $(dt.table().node()).addClass(this.s.namespace)
-            // 対象テーブルをターゲット可能にする
+
             $(dt.table().node()).attr('tabindex', -1)
 
 
@@ -521,7 +517,7 @@
         },
 
         /**
-         * initialize editable columns based on etting
+         * initialize editable rows based on etting
          * @return {boolean}
          */
         _initializeEditableRows: function()
@@ -675,13 +671,9 @@
             const VDMSG = {
                 0:{
                     message: type => this.lang.message.stopRedraw,
-                    // current:"editable-buttons-on",
-                    // oposit:"editable-buttons"
                 },
                 1:{
                     message: type => this.lang.message.startRedraw(type),
-                    // current:"editable-buttons",
-                    // oposit:"editable-buttons-on"
                 }
             }
 
@@ -702,7 +694,7 @@
                             _this._initializeFormData();
                         }
                     },
-                    className:"org",
+                    className:"editable-buttons",
                     text:this.lang.button.cancel,
                 })
                 if(this.c.validateDraw){
@@ -777,7 +769,6 @@
                     const title = $('<span></span>').addClass('inserttitle')
                     .text($(dt.column(i).header()).text() + ":");
                     const name = dt.context[0].aoColumns[i].mData;
-                    // || $(dt.column(i).header()).data('name');
 
                     const input = this["_input" + toUp(oDefs[i].inputType)]("dum", oDefs[i])
 
@@ -838,7 +829,15 @@
            const dtId = dt.settings()[0].sTableId
 
            $(`#${dtId}-editable-insert-wrapper`)
-            .css('display','block')
+           .css('display','block')
+
+           $(`#${dtId}-editable-insert-wrapper .input:eq(0)`).trigger('focus')
+
+           $(document).on('focusin',(e) => {
+               if(!e.target.closest(`#${dtId}-editable-insert-wrapper`)){
+                    $(`#${dtId}-editable-insert-wrapper .input:eq(0)`).trigger('focus')
+               }
+           })
        },
 
        _hideInsertWindow:function(){
@@ -849,6 +848,12 @@
                .css('display','none');
            $(`#${dtId}-editable-insert-wrapper :input`).each((i, e) =>{
                $(e).val("")
+           })
+
+           $(document).off('focusin',(e) => {
+               if(!e.target.closest(`#${dtId}-editable-insert-wrapper`)){
+                    $(`#${dtId}-editable-insert-wrapper .input:eq(0)`).trigger('focus')
+               }
            })
        },
 
@@ -932,26 +937,14 @@
        },
 
        /**
-        * ターゲットの現在位置を更新
-        * @param  {dom} target ターゲットの<td>タグ
-        * @return {[type]}        [description]
+        * Create HTML input(select, textarea) tab
         */
-       _refreshCurrentTableStructData: function(target)
-       {
-           var dt = this.s.dt;
-
-           var row = dt.row(target).index();
-           var col = dt.column(target).index();
-
-           this.current_target = {'row':row,'col':col};
-       },
-
        /**
-        * セルに入力用ラッパーを被せる
-        * @param  {dom} target ターゲットのセル
-        * @return {[type]}        [description]
+        * Create input tab of type text
+        * @param  {[any]} target cell
+        * @param  {[object]} def    options
+        * @return {[dom]}        DOM
         */
-
        _inputText: function(target, def){
            const ret =  $('<input></input>')
            .attr('type', 'text')
@@ -962,6 +955,12 @@
            return ret;
        },
 
+       /**
+        * Create input tab of type number
+        * @param  {any} target cell
+        * @param  {object} def    options
+        * @return {dom}        DOM
+        */
        _inputNumber: function(target, def){
            const ret =  $('<input></input>')
            .attr('type', 'number')
@@ -972,6 +971,12 @@
            return ret;
        },
 
+       /**
+        * Create input tab of type date
+        * @param  {[any]} target  cell
+        * @param  {[object]} def    options
+        * @return {dom}
+        */
        _inputDate: function(target, def){
            const date = new Date(this.s.dt.cell(target).data());
            const value = this._formatDate(date, 'Y-m-d');
@@ -984,6 +989,12 @@
            return ret;
        },
 
+       /**
+        * [description]
+        * @param  {object} date   date object
+        * @param  {string} format format of date
+        * @return {string}        formed date
+        */
        _formatDate:function(date, format){
            const MONTHS = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May.', 'Jun.', 'Jul.', 'Aug.', 'Sep.', 'Oct.', 'Nov.', 'Dec.'];
            let ret = format.replace('Y', date.getFullYear());
@@ -998,6 +1009,12 @@
 
        },
 
+       /**
+        * Create select tab and option tab
+        * @param  {any} target cell
+        * @param  {object} def    options
+        * @return {dom}        DOM
+        */
        _inputSelect:function(target, def){
            const data = this.s.dt.cell(target).data();
            const ret = $('<select></select>');
@@ -1020,6 +1037,12 @@
            return ret
        },
 
+       /**
+        * Create textarea tab
+        * @param  {any} target cell
+        * @param  {object} def    options
+        * @return {dom}        DOM
+        */
        _inputTextarea:function(target, def){
            const data = this.s.dt.cell(target).data();
            const ret = $('<textarea></textarea>').text(data);
@@ -1135,7 +1158,7 @@
 
            const current = {};
            current.column = dt.cell(qn.FOCUS).index().column;
-           current.row = dt.rows({order:'applied'})[0].indexOf(dt.row($(qn.FOCUS)).index())
+           current.row = dt.rows({order:'applied'})[0].indexOf(dt.cell(qn.FOCUS).index().row)
 
            if(rememberFlag && !this.tempBase){
                this.tempBase={
@@ -1348,12 +1371,6 @@
            return formed_val
        },
 
-       /**
-        * 編集したデータをフォームに追加する
-        * @param  {[type]} target [description]
-        * @param  {[type]} val    [description]
-        * @return {[type]}        [description]
-        */
        _addToFormData:function(target, val){
            const dt = this.s.dt;
 
@@ -1363,11 +1380,6 @@
            this.s.fd.append(`updates[${key}][${name}]`, val);
        },
 
-       /**
-        * オプション設定に基づき変更した値でのテーブルの描画タイミングを制御
-        * @param  object target [description]
-        * @return bool        [description]
-        */
        _controllDrawing:function(target){
 
            const dt = this.s.dt;
@@ -1379,10 +1391,7 @@
                left:sbody.scrollLeft()
            };
 
-           if( v === "cell" && on){
-               dt.cell( target ).invalidate().draw();
-               sbody.scrollTop(cs.top).scrollLeft(cs.left);
-           } else if( v === "row" && on){
+           if( v === "row" && on){
                dt.row( target ).invalidate().draw();
                sbody.scrollTop(cs.top).scrollLeft(cs.left);
            } else if( v === "table" && on){
@@ -1545,7 +1554,7 @@
             this._focusListenerRemove();
 
             $(document)
-            .on('keydown', namespace, function(e){
+            .on('keydown', `${namespace}`, function(e){
                 if(wrapper()){
                     let f = __this.functionKeysForWrapper[e.keyCode];
                     if(__this.keyOnPress){
@@ -1594,7 +1603,6 @@
             })
 
 
-            // ajax読み込み後に編集可能カラムを再設定する
             .on('xhr', function (e, settings, json, xhr) {
                 xhr.then(()=>{
                     __this._stateSave();
@@ -1747,7 +1755,7 @@
                 "submit" : "Save all changes?",
                 "cancel" : "Clear all changes not saved?",
                 "stopRedraw" : "Stopped auto redrawing",
-                "startRedraw" : (type) => `${type} will be redrawn on every cell edit`,
+                "startRedraw" : (type) => `Redraw table and target ${type} will be redrawn on every cell edit`,
                 "confirmDelete": "Delete selected line?",
                 "insertTitle":"Please insert values"
             }

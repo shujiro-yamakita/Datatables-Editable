@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DataTable-Editable - Example #13</title>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css" />
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css" />
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.2/css/buttons.dataTables.css" />
+  <link rel="stylesheet" href="../../src/datatables-editable.css" />
+
+</head>
+
+<body>
+  <p><br></p>
+      <h1>DataTable-Editable - Example #13</h1>
+      <h2>Validate Draw</h2>
+In manual mode, the table is not updated when you edit the cell.<br>
+However, if you have a cell whose value depends on the value of another cell, that can be a problem.<br>
+In that case, set the "row" or "table" option to the "validateDraw" option.<br>
+If "row" is set, the row will be recalculated and displayed when the cell is edited.<br>
+If "table" is set, the entire table will be recalculated and displayed.<br>
+  <div class="container">
+  <table cellpadding="0" cellspacing="0" border="0" class="dataTable table table-striped" id="example">
+
+  </table>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.0.0.js" ></script>
+<script src="https://code.jquery.com/jquery-migrate-3.3.0.js" ></script>
+<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" ></script>
+<script src="https://cdn.datatables.net/buttons/1.6.2/js/dataTables.buttons.js" ></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.js" ></script>
+<script src="../../src/datatables-editable.js" ></script>
+<script src="./example13.js" ></script>
+<script>
+var myTable;
+</script>
+
+</body>
+</html>

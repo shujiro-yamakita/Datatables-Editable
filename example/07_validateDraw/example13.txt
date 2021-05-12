@@ -1,0 +1,13 @@
+{
+  "data": [
+    {
+      "base_number":"1"
+    },{
+      "base_number":"10"
+    },{
+      "base_number":"100"
+    },{
+      "base_number":"1000"
+    }
+  ]
+}

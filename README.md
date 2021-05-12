@@ -57,8 +57,8 @@ DataTables-Editable accept following options.
 | `columnDefs` | array | `[]` | Set HTML input type and other settings for pericular column.|
 | [`saveType`](#saveType) | string | `auto` | Set when to run saving method.   `auto` Save data on every cell edit done.  `manual` Save data when the "save" button is pushed |
 | [`ajax`](#ajax) | object | | Set ajax properties. |
-| [`keyData`](#keyData) | string | `false` | |
-| [`validateDraw`](#validateDraw) | | `false` | |
+| [`keyData`](#keyData) | string / boolean | `false` | Set data to use unique key of data to send |
+| [`validateDraw`](#validateDraw) | string / boolean | `false` | Redraw rows or tables when editing cells when using manual mode. Set `row` or `table` |
 | [`onSave`](#onSave) | function | | Callback start when saving on server done. |
 | [`onSaveDone`](#onSave) | function | | Callback start when saving on server successfully done. |
 | [`onSaveFailed`](#onSave) | function | | Callback start when saving on server failed. |
@@ -127,9 +127,9 @@ simple example
 ### keyData
 
 The data sent has a unique key value. By default, the table row number is used as the key.
-_keyData_ option allows you to set the value of a specific column as a key.
+_keyData_ option allows you to set the value of a specific data in row as a key.
 
-_*CAUTION It is not checked whether the data in the set column has a unique value_.
+_*CAUTION It will NOT be checked whether the data in the set has a unique value or not_.
 
 
 ### validateDraw
