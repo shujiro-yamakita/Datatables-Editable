@@ -794,10 +794,10 @@
        },
 
        /**
-        * Create HTML input(select, textarea) tab
+        * Create HTML input(select, textarea) tag
         */
        /**
-        * Create input tab of type text
+        * Create input tag of type text
         * @param  {[any]} target cell
         * @param  {[object]} def    options
         * @return {[dom]}        DOM
@@ -813,7 +813,7 @@
        },
 
        /**
-        * Create input tab of type number
+        * Create input tag of type number
         * @param  {any} target cell
         * @param  {object} def    options
         * @return {dom}        DOM
@@ -829,7 +829,7 @@
        },
 
        /**
-        * Create input tab of type date
+        * Create input tag of type date
         * @param  {[any]} target  cell
         * @param  {[object]} def    options
         * @return {dom}
@@ -867,7 +867,7 @@
        },
 
        /**
-        * Create select tab and option tab
+        * Create select tag and option tag
         * @param  {any} target cell
         * @param  {object} def    options
         * @return {dom}        DOM
@@ -895,7 +895,7 @@
        },
 
        /**
-        * Create textarea tab
+        * Create textarea tag
         * @param  {any} target cell
         * @param  {object} def    options
         * @return {dom}        DOM
