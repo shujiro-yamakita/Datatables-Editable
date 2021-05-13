@@ -1569,7 +1569,7 @@
 
         },
 
-        onSaveFail:(xhr, status, errorThrown) => {
+        onSaveFailed:(xhr, status, errorThrown) => {
 
         },
 
