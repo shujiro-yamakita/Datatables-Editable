@@ -61,14 +61,14 @@ DataTables-Editable accept following options.
 | [`validateDraw`](#validateDraw) | string / boolean | `false` | Redraw rows or tables when editing cells when using manual mode. Set `row` or `table` |
 | [`onSave`](#onSave (onSaveDone, onSaveFailed)) | function | | Callback start when saving on server done. |
 | [`onSaveDone`](#onSave (onSaveDone, onSaveFailed)) | function | | Callback start when saving on server successfully done. |
-| [`onSaveFailed`](#onSave (onSaveDone, onSaveFailed)) | function | | Callback start when saving on server failed. |
+| [`onSaveFailed`](#onSave,onSaveDone, onSaveFailed) | function | | Callback start when saving on server failed. |
 
 ### inputType
 `text`,`number`,`date`,`select`,`textarea`
 
 Set the type of the input tag displayed at the time of input.
 To customise input tag, `attr`,`foramt`,`formula` options are ready.
-In the case of select tag, format option is required to set option tags.  
+In the case of select tag, formula option is required to set option tags.  
 To change the input method for each column, set it with the columnDefs option.
 
 simple example  
@@ -134,7 +134,7 @@ _*CAUTION It will NOT be checked whether the data in the set has a unique value 
 
 ### validateDraw
 
-### onSave (onSaveDone, onSaveFailed)
+### onSave,onSaveDone,onSaveFailed
 
 Callback runs after saving data to server via ajax.
 
